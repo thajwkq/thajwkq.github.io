@@ -3,145 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محلل حسابات تيك توك وإنستغرام الذكي</title>
+    <title>منصة تحليل الحسابات الاحترافية | AI Analytics & Growth</title>
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5879603063679468" crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #8a3ab9;
-            --secondary: #fe2c55;
-            --dark: #121212;
-            --light: #f8f9fa;
+            --bg-base: #0b0c10;
+            --bg-surface: #1f2833;
+            --primary: #66fcf1;
+            --primary-dark: #45b29d;
+            --accent-tiktok: #fe2c55;
+            --accent-insta: #e1306c;
+            --text-main: #ffffff;
+            --text-gray: #a9b7c6;
+            --border-color: #2c3539;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f0f12;
-            color: #ffffff;
-            margin: 0;
+            background-color: var(--bg-base);
+            color: var(--text-main);
             padding: 20px;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         header {
-            text-align: center;
-            padding: 40px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 30px;
         }
 
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--accent-tiktok));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .upload-section {
-            background: #1e1e24;
-            border: 2px dashed #444;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
+        .auth-buttons button {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: 600;
             transition: 0.3s;
         }
 
-        .upload-section:hover {
-            border-color: var(--secondary);
+        .auth-buttons button:hover {
+            background: var(--primary);
+            color: var(--bg-base);
         }
 
-        #fileInput {
-            display: none;
+        .main-card {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
         }
 
-        .btn {
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 1rem;
-            border-radius: 25px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        #preview {
-            max-width: 200px;
-            margin: 20px auto;
-            display: none;
+        .upload-zone {
+            border: 2px dashed var(--primary);
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            padding: 40px 20px;
+            cursor: pointer;
+            background: rgba(102, 252, 241, 0.02);
+            transition: 0.3s;
         }
 
-        .loading {
+        .upload-zone:hover {
+            background: rgba(102, 252, 241, 0.05);
+            border-color: var(--accent-tiktok);
+        }
+
+        #fileInput { display: none; }
+
+        .btn-analyze {
+            background: linear-gradient(45deg, var(--primary-dark), var(--accent-tiktok));
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 25px;
+            box-shadow: 0 5px 15px rgba(254, 44, 85, 0.3);
+            transition: 0.3s;
+        }
+
+        #previewImg {
+            max-width: 150px;
+            border-radius: 8px;
+            margin-top: 15px;
             display: none;
-            margin: 20px 0;
-            color: var(--secondary);
-            font-weight: bold;
         }
 
-        /* قسم النتائج */
-        .results-section {
+        .dashboard-grid {
             display: none;
-            margin-top: 40px;
-            background: #1e1e24;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
         }
 
-        .result-card {
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #333;
+        @media (min-width: 768px) {
+            .dashboard-grid { grid-template-columns: 2fr 1fr; }
         }
 
-        .result-card h3 {
-            color: #fe2c55;
-            margin-top: 0;
+        .dashboard-card {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            padding: 25px;
         }
 
-        .hashtag {
-            display: inline-block;
-            background: rgba(138, 58, 185, 0.2);
-            color: #d660ff;
-            padding: 5px 12px;
-            border-radius: 15px;
-            margin: 5px;
-            font-weight: bold;
-            border: 1px solid var(--primary);
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
         }
 
-        /* الجدول الأسبوعي */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            background: #121212;
-            border-radius: 10px;
-            overflow: hidden;
+            text-align: right;
         }
 
         th, td {
             padding: 12px 15px;
-            text-align: center;
-            border: 1px solid #292933;
+            border-bottom: 1px solid var(--border-color);
         }
 
         th {
-            background-color: var(--primary);
-            color: white;
+            background-color: rgba(102, 252, 241, 0.1);
+            color: var(--primary);
         }
 
-        tr:nth-child(even) {
-            background-color: #1a1a22;
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-action {
+            background: #2c3539;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-action.save {
+            background: var(--primary-dark);
+            border: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -149,121 +197,137 @@
 
 <div class="container">
     <header>
-        <h1>محلل الحسابات الذكي 🚀</h1>
-        <p>ارفع صورة لملفك الشخصي (تيك توك أو إنستغرام) واحصل على خطة نمو متكاملة</p>
+        <div class="logo">AI SocialAnalyzer Pro</div>
+        <div class="auth-buttons">
+            <button id="btnAuth" onclick="toggleAuth()">تسجيل الدخول عبر جوجل</button>
+        </div>
     </header>
 
-    <!-- منطقة رفع الصورة -->
-    <div class="upload-section" onclick="document.getElementById('fileInput').click()">
-        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-        <p>اضغط هنا لرفع صورة الحساب الشخصي (Screenshot)</p>
-        <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
-        <img id="preview" alt="معاينة الصورة">
-    </div>
-
-    <div style="text-align: center;">
-        <button class="btn" onclick="analyzeAccount()">ابدأ التحليل الذكي</button>
-        <div class="loading" id="loadingText">جاري فحص الصورة وتحليل البيانات بالذكاء الاصطناعي...</div>
-    </div>
-
-    <!-- قسم عرض النتائج -->
-    <div class="results-section" id="results">
-        <div class="result-card">
-            <h3>💡 المحتوى المناسب لحسابك</h3>
-            <p id="contentType">بناءً على الصورة المرفوعة، حسابك يمتلك طابعاً (تقنياً/تعليمياً). يفضل التركيز على الفيديوهات القصيرة (Reels/TikTok) التي تشرح حلولاً للمشاكل اليومية في 30 ثانية باستخدام صوتك الشخصي لزيادة الموثوقية.</p>
+    <main class="main-card">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+            <p>اسحب وأفلت لقطة شاشة الملف الشخصي هنا، أو اضغط للتصفح</p>
+            <input type="file" id="fileInput" accept="image/*" onchange="handleImage(event)">
+            <img id="previewImg" alt="معاينة اللقطة">
         </div>
+        <button class="btn-analyze" onclick="startAIAnalysis()">بدأ التحليل وتوليد الخطة الذكية</button>
+        <div class="loading-spinner" id="loader">جاري معالجة الصورة وتحليل نمط الحساب عبر الذكاء الاصطناعي...</div>
+    </main>
 
-        <div class="result-card">
-            <h3>#️⃣ أفضل 5 هاشتاقات لنوع حسابك</h3>
-            <div id="hashtagsContainer">
-                <span class="hashtag">#صناع_المحتوى</span>
-                <span class="hashtag">#تطوير_الذات</span>
-                <span class="hashtag">#نصائح_رقمية</span>
-                <span class="hashtag">#إنستغرام_تيكتوك</span>
-                <span class="hashtag">#تعلم_على_التيك_توك</span>
+    <div class="dashboard-grid" id="dashboard">
+        <div class="dashboard-card" style="grid-column: span 2 / span 2;">
+            <div class="card-title">📅 خطة النشر الأسبوعية وحفظها السحابي</div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اليوم</th>
+                            <th>المحتوى المستهدف</th>
+                            <th>أفضل وقت (ذروة)</th>
+                            <th>الهاشتاقات المقترحة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>السبت</td>
+                            <td>فيديو تعليمي سريع (ريلز/تيك توك)</td>
+                            <td>06:00 مساءً</td>
+                            <td>#تسويق #صناعة_محتوى</td>
+                        </tr>
+                        <tr>
+                            <td>الاثنين</td>
+                            <td>منشور تفاعلي خلف الكواليس</td>
+                            <td>08:30 مساءً</td>
+                            <td>#يوميات #ستوري</td>
+                        </tr>
+                        <tr>
+                            <td>الأربعاء</td>
+                            <td>حل مشكلة شائعة للمتابعين</td>
+                            <td>07:15 مساءً</td>
+                            <td>#نصائح_ذكية #تقنية</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
-
-        <div class="result-card">
-            <h3>⏰ أفضل أوقات النشر اليومية</h3>
-            <p id="bestTimes">أوقات ذروة التفاعل لجمهورك هي: <b>4:00 مساءً</b> و <b>8:30 مساءً</b> (حسب التوقيت المحلي).</p>
-        </div>
-
-        <div class="result-card">
-            <h3>📅 جدول النشر الأسبوعي المقترح</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>اليوم</th>
-                        <th>نوع المنشور</th>
-                        <th>وقت النشر</th>
-                        <th>الهدف</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>السبت</td>
-                        <td>فيديو قصير (Reels)</td>
-                        <td>05:00 م</td>
-                        <td>جذب متابعين جدد</td>
-                    </tr>
-                    <tr>
-                        <td>الإثنين</td>
-                        <td>سلسلة نصائح (Carousel)</td>
-                        <td>07:00 م</td>
-                        <td>زيادة الحفظ (Save)</td>
-                    </tr>
-                    <tr>
-                        <td>الأربعاء</td>
-                        <td>فيديو تفاعلي/سؤال</td>
-                        <td>08:00 م</td>
-                        <td>زيادة التعليقات</td>
-                    </tr>
-                    <tr>
-                        <td>الجمعة</td>
-                        <td>فيديو ترفيهي/خلف الكواليس</td>
-                        <td>04:00 م</td>
-                        <td>بناء علاقة مع الجمهور</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="action-bar">
+                <button class="btn-action" onclick="window.print()">طباعة PDF</button>
+                <button class="btn-action save" onclick="saveToFirebase()">حفظ الجدول في حسابك السحابي</button>
+            </div>
         </div>
     </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
 <script>
-    // وظيفة معاينة الصورة بعد رفعها
-    function previewImage(event) {
-        const reader = new FileReader();
-        reader.onload = function(){
-            const output = document.getElementById('preview');
-            output.src = reader.result;
-            output.style.display = 'block';
-        };
-        reader.readAsDataURL(event.target.files[0]);
+    // ⚠️ استبدل هذه الإعدادات ببيانات مشروعك الحقيقي من Firebase لاحقاً لحفظ الجداول
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    let currentUser = null;
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('btnAuth').innerText = "تسجيل الخروج (" + user.displayName + ")";
+        } else {
+            currentUser = null;
+            document.getElementById('btnAuth').innerText = "تسجيل الدخول عبر جوجل";
+        }
+    });
+
+    function toggleAuth() {
+        if (!currentUser) {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => console.log(err));
+        } else {
+            auth.signOut();
+        }
     }
 
-    // محاكاة عملية التحليل
-    function analyzeAccount() {
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput.files.length === 0) {
-            alert('الرجاء رفع صورة الحساب أولاً!');
+    function handleImage(e) {
+        const file = e.target.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = document.getElementById('previewImg');
+                img.src = event.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function startAIAnalysis() {
+        if(document.getElementById('fileInput').files.length === 0) {
+            alert("يرجى اختيار صورة أولاً!");
             return;
         }
-
-        document.getElementById('loadingText').style.display = 'block';
-        document.getElementById('results').style.display = 'none';
-
-        // محاكاة انتهاء التحليل بعد 3 ثوانٍ
+        document.getElementById('loader').style.display = 'block';
         setTimeout(() => {
-            document.getElementById('loadingText').style.display = 'none';
-            document.getElementById('results').style.display = 'block';
-            
-            // سحب الشاشة تلقائياً للأسفل لرؤية النتائج
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }, 3000);
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'grid';
+        }, 2000);
+    }
+
+    function saveToFirebase() {
+        if (!currentUser) {
+            alert("يرجى تسجيل الدخول أولاً بحساب جوجل لحفظ الجدول سحابياً!");
+            return;
+        }
+        alert("سيتم الحفظ فور تهيئة مفاتيح الفايربيس الخاصة بك!");
     }
 </script>
-
 </body>
 </html>
+
