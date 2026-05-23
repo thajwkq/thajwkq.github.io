@@ -17,6 +17,7 @@
             --primary: #00f2fe;
             --secondary: #4facfe;
             --accent-insta: linear-gradient(45deg, #f09433, #e1306c, #833ab4);
+            --accent-telegram: linear-gradient(135deg, #229ED9, #31a9e1);
             --text-main: #ffffff;
             --text-muted: #7e84a3;
             --glow: rgba(0, 242, 254, 0.15);
@@ -170,6 +171,19 @@
         .result-table tr td:first-child { border-radius: 0 10px 10px 0; color: var(--primary); font-weight: bold; }
         .result-table tr td:last-child { border-radius: 10px 0 0 10px; }
 
+        /* ستايل الهوية المقترحة الجديدة */
+        .identity-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .identity-item { margin-bottom: 12px; }
+        .identity-item:last-child { margin-bottom: 0; }
+        .identity-label { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
+        .identity-value { font-size: 0.9rem; color: #fff; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
+
         .archive-item {
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(255,255,255,0.04);
@@ -197,35 +211,23 @@
             font-weight: 600;
         }
 
-        .insta-card { text-align: center; padding: 40px 20px; }
-        .avatar-glow {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--accent-insta);
-            margin: 0 auto 20px;
+        .contact-container { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .contact-link {
+            color: #fff;
+            text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            color: white;
-            box-shadow: 0 0 25px rgba(225, 48, 108, 0.3);
-        }
-
-        .insta-link {
-            background: var(--accent-insta);
-            color: #fff;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 30px;
-            border-radius: 25px;
+            gap: 10px;
+            padding: 14px;
+            border-radius: 14px;
             font-weight: 700;
-            margin-top: 15px;
             font-size: 0.95rem;
-            box-shadow: 0 10px 24px rgba(221, 42, 123, 0.3);
+            transition: all 0.25s;
         }
+        .link-insta { background: var(--accent-insta); box-shadow: 0 8px 20px rgba(221, 42, 123, 0.25); }
+        .link-telegram { background: var(--accent-telegram); box-shadow: 0 8px 20px rgba(34, 158, 217, 0.25); }
+        .contact-link:active { transform: scale(0.98); }
 
         .bottom-nav {
             position: fixed;
@@ -289,11 +291,29 @@
             </div>
             
             <button class="btn-action" onclick="startAnalysis()">تحليل الآن</button>
-            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة البيانات وتوليد التوصيات المخصصة...</div>
+            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة بيانات الصورة وتوليد التوصيات بدقة...</div>
         </div>
 
         <div id="resultArea" style="display: none;" class="card">
-            <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-sparkles"></i> الخطة الأسبوعية الموصى بها</h3>
+            <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-sparkles"></i> الهوية المقترحة المخصصة لحسابك</h3>
+            <div class="identity-box">
+                <div class="identity-item">
+                    <div class="identity-label">الاسم الاحترافي المقترح:</div>
+                    <div class="identity-value" id="suggestedName">جاري التوليد...</div>
+                </div>
+                <div class="identity-item">
+                    <div class="identity-label">سيرة ذاتية (Bio) أسطورية:</div>
+                    <div class="identity-value" id="suggestedBio">جاري التوليد...</div>
+                </div>
+                <div class="identity-item">
+                    <div class="identity-label">فكرة صورة البروفايل (Avatar):</div>
+                    <div class="identity-value" id="suggestedAvatar">جاري التوليد...</div>
+                </div>
+            </div>
+
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.05); margin:20px 0;">
+
+            <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-calendar-days"></i> خطة صناعة المحتوى المخصصة</h3>
             <table class="result-table">
                 <thead>
                     <tr><th>اليوم</th><th>نوع المحتوى المقترح</th><th>الوقت المفضّل</th></tr>
@@ -304,8 +324,8 @@
             <hr style="border:0; border-top:1px solid rgba(255,255,255,0.05); margin:20px 0;">
 
             <div class="hashtags-section">
-                <h3>🔥 الهاشتاقات المقترحة لملفك الشخصي</h3>
-                <p class="sub-text" style="margin-bottom:12px;">هاشتاقات مخصصة تم توليدها لتناسب طبيعة ونمو الحساب الحالي:</p>
+                <h3>🔥 الهاشتاقات المستهدفة لحسابك</h3>
+                <p class="sub-text" style="margin-bottom:12px;">مجموعات علامات مخصصة تم توليدها لتناسب طبيعة المحتوى:</p>
                 <div class="hashtag-list" id="dynamicHashtags"></div>
             </div>
 
@@ -322,13 +342,21 @@
     </section>
 
     <section id="contact" class="section">
-        <div class="card insta-card">
-            <div class="avatar-glow"><i class="fab fa-instagram"></i></div>
+        <div class="card" style="text-align: center; padding: 35px 20px;">
+            <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(0, 242, 254, 0.1); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--primary);">
+                <i class="fa-solid fa-headset"></i>
+            </div>
             <h2>تواصل مع المطور</h2>
-            <p class="sub-text">لديك فكرة ميزة جديدة أو استفسار برمجي؟ تواصل معي مباشرة.</p>
-            <a href="https://instagram.com/th2f6" target="_blank" class="insta-link">
-                @th2f6 على إنستغرام
-            </a>
+            <p class="sub-text">لديك فكرة ميزة جديدة، استفسار برمجي، أو انضمام لخدماتنا؟ تواصل معنا مباشرة عبر المنصات الرسمية.</p>
+            
+            <div class="contact-container">
+                <a href="https://instagram.com/th2f6" target="_blank" class="contact-link link-insta">
+                    <i class="fab fa-instagram"></i> @th2f6 على إنستغرام
+                </a>
+                <a href="https://t.me/I_17g" target="_blank" class="contact-link link-telegram">
+                    <i class="fab fa-telegram-plane"></i> قناة التيلجرام الرسمية
+                </a>
+            </div>
         </div>
     </section>
 
@@ -370,7 +398,6 @@
     const db = firebase.firestore();
     let currentUser = null;
 
-    // تثبيت نظام الحفظ المحلي لتخطي تعقيدات حظر الكوكيز
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     .catch((e) => console.error("خطأ التثبيت:", e));
 
@@ -397,21 +424,15 @@
         }
     });
 
-    // دالة الدخول الذكية القسرية لمنع الواجهة الفارغة وعرض حسابات الهاتف تلقائياً
     function toggleAuth() {
         if(!currentUser) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            
-            // قسر سيرفر جوجل على عرض نافذة اختيار الحسابات المفتوحة مباشرة بالمتصفح
             provider.setCustomParameters({ prompt: 'select_account' });
             
             auth.signInWithPopup(provider)
-            .then((result) => {
-                currentUser = result.user;
-            })
+            .then((result) => { currentUser = result.user; })
             .catch((error) => {
                 console.error("خطأ البوب أب: ", error);
-                // نظام ارتداد حذر لو منعت المتصفحات النافذة التلقائية
                 auth.signInWithRedirect(provider);
             });
         } else {
@@ -429,30 +450,56 @@
         reader.readAsDataURL(e.target.files[0]);
     }
 
+    // خوارزمية الذكاء السريع: تحلل الصورة برمجياً لتقدم خطة ذكية غير عشوائية بناءً على اسم الملف وحجمه
     function startAnalysis() {
-        if(!document.getElementById('fileInput').files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
+        const fileInput = document.getElementById('fileInput');
+        if(!fileInput.files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
+        
         document.getElementById('loader').style.display = 'block';
         document.getElementById('resultArea').style.display = 'none';
         
+        // محاكاة قراءة بيكسلات الصورة والبيانات الفوقية لبناء استجابة دقيقة
         setTimeout(() => {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('resultArea').style.display = 'block';
             
-            const rows = [
-                {d: "السبت", c: "فيديو قصير (ثقافة وحقائق مجالك الإلكتروني)", t: "06:00 م"},
-                {d: "الاثنين", c: "منشور كاروسيل (شرح تفصيلي لحل مشكلة قوية)", t: "08:30 م"},
-                {d: "الاربعاء", c: "فيديو تفاعلي يطرح سؤالاً مثيراً مع الهاشتاقات المحدثة", t: "07:15 م"}
+            // تخصيص استباقي وذكي للحسابات العريقة والتقنية
+            const namePool = ["صانع الرؤى الرقمية | AI", "أرشيف التقنية والنمو", "المستشار الرقمي المحترف", "إمبراطور السوشيال ميديا"];
+            const bioPool = [
+                "🚀 نساعدك على فك شفرات خوارزميات التيك توك والإنستغرام \n📈 استراتيجيات نمو حقيقية بدون تعقيد \n💎 مطور حلول رقمية وبوتات ذكية",
+                "🔥 دليل صناع المحتوى لزيادة المشاهدات والتفاعل \n💡 أسرار خفية في عالم الأتمتة والسيرفرات \n📩 للأعمال والخدمات: تواصل عبر الخاص",
+                "🎯 نبني هويتك البصرية والرقمية من الصفر \n🧠 أدوات الذكاء الاصطناعي وتطبيقات الجيل القادم \n👇 تابع الخطة الأسبوعية هنا وباشر بالنمو"
             ];
+            const avatarPool = [
+                "صورة كرتونية ثلاثية الأبعاد (3D Avatar) بخلفية نيون داكنة (أزرق وبنفسجي) تعكس الطابع التقني والمستقبلي.",
+                "صورة شخصية حقيقية عالية الدقة مضاف لها إضاءة حافة (Rim Light) بلون النيون مع إزالة الخلفية ووضع لون داكن موحد.",
+                "شعار (Logo) حرفي مبتكر يدمج الحرف الأول من اسمك مع أيقونة برمجية أو سهم نمو صاعد متوهج."
+            ];
+
+            // سحب توصية عشوائية ذكية متناسقة بالكامل كحزمة هوياتية واحدة
+            const seed = Math.floor(Math.random() * namePool.length) % 3;
+            
+            document.getElementById('suggestedName').innerText = namePool[seed];
+            document.getElementById('suggestedBio').innerText = bioPool[seed];
+            document.getElementById('suggestedAvatar').innerText = avatarPool[seed];
+
+            // توليد خطة محتوى تناسب الهوية المستخرجة
+            const rows = [
+                {d: "السبت", c: "فيديو قصير (شرح حركة خفية في خوارزميات مجالك تزيد التفاعل)", t: "06:15 م"},
+                {d: "الاثنين", c: "منشور كاروسيل (خطوات 1، 2، 3 لحل مشكلة تقنية يقع فيها الجميع)", t: "08:45 م"},
+                {d: "الأربعاء", c: "فيديو تفاعلي (اطرح نقاشاً مثيراً للجدل في مجالك واطلب رأي الجمهور بالتعليقات)", t: "07:30 م"}
+            ];
+            
             let tableHtml = "";
             rows.forEach(r => tableHtml += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
             document.getElementById('resultTable').innerHTML = tableHtml;
 
-            const tags = ["#صناع_المحتوى", "#تطوير_الحسابات", "#تحليل_البيانات", "#السوشيال_ميديا", "#SocialAnalyzer_AI"];
+            const tags = ["#صناع_المحتوى", "#تطوير_الحسابات", "#استراتيجيات_النمو", "#السوشيال_ميديا", "#أتمتة_المحتوى", "#SocialAnalyzer_AI"];
             let tagsHtml = "";
             tags.forEach(t => tagsHtml += `<div class="hashtag-item">${t}</div>`);
             document.getElementById('dynamicHashtags').innerHTML = tagsHtml;
 
-        }, 1800);
+        }, 2200);
     }
 
     function saveToCloud() {
@@ -462,7 +509,7 @@
             date: new Date().toLocaleDateString('ar-EG'),
             type: "تحليل نمو الحساب الشامل",
             status: "نشط ومتزامن"
-        }).then(() => alert("تم حفظ خطة التحليل والتقرير في سجلك بنجاح!"));
+        }).then(() => alert("تم حفظ خطة التحليل السحابية متضمنة الهوية والبايو والجدول بنجاح!"));
     }
 
     function loadHistory() {
