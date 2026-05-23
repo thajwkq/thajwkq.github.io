@@ -370,11 +370,9 @@
     const db = firebase.firestore();
     let currentUser = null;
 
-    // إجبار الفايربيس على حفظ الجلسة محلياً داخل المتصفح لتخطي حظر ملفات ارتباط الطرف الثالث
+    // تثبيت نظام الحفظ المحلي لتخطي تعقيدات حظر الكوكيز
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .then(() => {
-        console.log("تم تثبيت نظام الحفظ المحلي بنجاح.");
-    }).catch((e) => console.error("خطأ التثبيت المحلى:", e));
+    .catch((e) => console.error("خطأ التثبيت:", e));
 
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -399,21 +397,21 @@
         }
     });
 
-    // استخدام طريقة الفتح المنبثق المحمي من الكوكيز الخبيثة
+    // دالة الدخول الذكية القسرية لمنع الواجهة الفارغة وعرض حسابات الهاتف تلقائياً
     function toggleAuth() {
         if(!currentUser) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // طلب الحساب بشكل صريح لمنع التوجيه المكسور
+            
+            // قسر سيرفر جوجل على عرض نافذة اختيار الحسابات المفتوحة مباشرة بالمتصفح
             provider.setCustomParameters({ prompt: 'select_account' });
             
             auth.signInWithPopup(provider)
             .then((result) => {
                 currentUser = result.user;
-                console.log("تم الدخول بنجاح للحساب:", currentUser.displayName);
             })
             .catch((error) => {
-                console.error("فشل الدخول بالنافذة: ", error);
-                // حل احتياطي أخير إذا فشل البوب أب تماماً بسبب المتصفح
+                console.error("خطأ البوب أب: ", error);
+                // نظام ارتداد حذر لو منعت المتصفحات النافذة التلقائية
                 auth.signInWithRedirect(provider);
             });
         } else {
