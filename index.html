@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SocialAnalyzer AI</title>
 
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5879603063679468" crossorigin="anonymous"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -497,6 +498,13 @@
             transform: scale(0.98);
         }
 
+        /* إعلان وسطي */
+        .ad-container {
+            text-align: center;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -564,6 +572,19 @@
 
                 <button class="btn-action" onclick="startAnalysis()">تحليل الآن</button>
                 <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة بيانات الصورة وتوليد التوصيات بدقة...</div>
+
+                <!-- الإعلان الأول: أسفل زر التحليل -->
+                <div class="ad-container">
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-5879603063679468"
+                         data-ad-slot="1193804964"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                    <script>
+                         (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
             </div>
 
             <!-- النتائج -->
@@ -656,6 +677,20 @@
                 <button class="btn-action" onclick="saveToCloud()">💾 حفظ الخطة والتقرير في السجل السحابي</button>
                 <button class="btn-action btn-pdf" onclick="exportPDF()">📄 تصدير التقرير كـ PDF</button>
             </div>
+
+            <!-- الإعلان الثاني: نهاية صفحة home -->
+            <div class="ad-container">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-5879603063679468"
+                     data-ad-slot="1193804964"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+
         </section>
 
         <section id="history" class="section">
@@ -728,7 +763,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         let currentUser = null;
-        let analysisData = {}; // لتخزين بيانات التحليل للـ PDF
+        let analysisData = {};
 
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             .catch((e) => console.error("خطأ التثبيت:", e));
@@ -781,7 +816,6 @@
             reader.readAsDataURL(e.target.files[0]);
         }
 
-        // ============ نظام الذكاء التحليلي المتعدد ============
         function getImageAnalysis(file) {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -806,23 +840,17 @@
             });
         }
 
-        // ============ حالة الحساب ============
         function calculateHealthScore(bioText, followersCount) {
-            let score = 50; // أساسي
+            let score = 50;
             const details = [];
-            if (bioText && bioText.length > 20) { score += 20;
-                details.push("بايو احترافي (+20)"); } else { details.push("بايو قصير يحتاج تحسين"); }
-            if (followersCount && followersCount > 100) { score += 15;
-                details.push("قاعدة متابعين جيدة (+15)"); } else { details.push("قاعدة متابعين صغيرة"); }
-            // محاكاة: الصورة موجودة دائماً
-            score += 10;
-            details.push("صورة بروفايل موجودة (+10)");
+            if (bioText && bioText.length > 20) { score += 20; details.push("بايو احترافي (+20)"); } else { details.push("بايو قصير يحتاج تحسين"); }
+            if (followersCount && followersCount > 100) { score += 15; details.push("قاعدة متابعين جيدة (+15)"); } else { details.push("قاعدة متابعين صغيرة"); }
+            score += 10; details.push("صورة بروفايل موجودة (+10)");
             score = Math.min(score, 100);
             score = Math.max(score, 10);
             return { score, details };
         }
 
-        // ============ رسم عداد الحالة ============
         function drawHealthGauge(score) {
             const canvas = document.getElementById('healthGauge');
             if (!canvas) return;
@@ -830,15 +858,12 @@
             const w = canvas.width;
             const h = canvas.height;
             ctx.clearRect(0, 0, w, h);
-
-            // خلفية
             ctx.beginPath();
             ctx.arc(70, 70, 55, 0.75 * Math.PI, 2.25 * Math.PI);
             ctx.lineWidth = 14;
             ctx.strokeStyle = 'rgba(255,255,255,0.05)';
             ctx.stroke();
 
-            // القوس الملون
             const angleStart = 0.75 * Math.PI;
             const angleEnd = angleStart + (score / 100) * (1.5 * Math.PI);
             const gradient = ctx.createLinearGradient(0, 0, w, h);
@@ -856,14 +881,12 @@
 
             document.getElementById('healthPercent').innerText = score + '%';
             let label = score >= 80 ? 'ممتاز! حسابك في أفضل حالة 🌟' :
-                score >= 50 ? 'جيد، هناك مجال للتحسين 👍' :
-                'يحتاج تحسينات عاجلة ⚠️';
+                        score >= 50 ? 'جيد، هناك مجال للتحسين 👍' :
+                        'يحتاج تحسينات عاجلة ⚠️';
             document.getElementById('healthLabel').innerText = label;
         }
 
-        // ============ رسم توقعات النمو ============
         let growthChartInstance = null;
-
         function drawGrowthChart(currentFollowers) {
             const canvas = document.getElementById('growthChart');
             if (!canvas) return;
@@ -898,29 +921,20 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            grid: { color: 'rgba(255,255,255,0.04)' },
-                            ticks: { color: '#7e84a3', font: { size: 10 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#7e84a3', font: { size: 9 }, maxTicksLimit: 6 }
-                        }
+                        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#7e84a3', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#7e84a3', font: { size: 9 }, maxTicksLimit: 6 } }
                     }
                 }
             });
 
             const predicted = data[data.length - 1];
-            document.getElementById('growthSummary').innerText =
+            document.getElementById('growthSummary').innerText = 
                 `📊 المتوقع وصولك إلى ${predicted.toLocaleString()} متابع خلال 30 يوم (نمو ~${Math.round((predicted/followers -1)*100)}%)`;
             document.getElementById('growthCard').style.display = 'block';
         }
 
-        // ============ قائمة المهام ============
         function renderTaskList() {
             const tasks = [
                 { id: 't1', text: 'نشر ستوري تفاعلي اليوم', cat: 'محتوى' },
@@ -949,7 +963,6 @@
         function toggleTask(el, taskId) {
             el.classList.toggle('done');
             updateTaskCounter();
-            // حفظ في Firebase
             if (currentUser && el.classList.contains('done')) {
                 db.collection("user_tasks").add({
                     uid: currentUser.uid,
@@ -968,9 +981,7 @@
             document.getElementById('totalTasks').innerText = total;
         }
 
-        // ============ الهاشتاقات الرائجة ============
         function fetchTrendingHashtags() {
-            // محاكاة API للهاشتاقات الرائجة
             const trendingPools = [
                 ['#دوري_روشن', '#الهلال', '#النصر', '#الاتحاد', '#الأهلي'],
                 ['#كلاسيكو_الارض', '#برشلونة', '#ريال_مدريد', '#دوري_الابطال', '#مانشستر_سيتي'],
@@ -988,7 +999,6 @@
             });
         }
 
-        // ============ التحليل الرئيسي ============
         async function startAnalysis() {
             const fileInput = document.getElementById('fileInput');
             if (!fileInput.files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
@@ -999,20 +1009,16 @@
             document.getElementById('loader').style.display = 'block';
             document.getElementById('resultArea').style.display = 'none';
 
-            // تحليل الصورة
             const imageAnalysis = await getImageAnalysis(fileInput.files[0]);
 
             setTimeout(() => {
                 document.getElementById('loader').style.display = 'none';
                 document.getElementById('resultArea').style.display = 'block';
 
-                // --- الذكاء التحليلي المتعدد ---
                 document.getElementById('accountType').innerText = imageAnalysis.accountType;
-                document.getElementById('accountTypeDesc').innerText =
-                    imageAnalysis.accountDesc +
+                document.getElementById('accountTypeDesc').innerText = imageAnalysis.accountDesc +
                     ` (نسبة العرض/الارتفاع: ${imageAnalysis.ratio.toFixed(2)} | ${imageAnalysis.width}x${imageAnalysis.height}px)`;
 
-                // --- الهوية ---
                 const namePool = [
                     "عالم المستديرة | كرة قدم",
                     "ملاعب العرب | تحليل ونجوم",
@@ -1043,48 +1049,33 @@
                 document.getElementById('suggestedBio').innerText = suggestedBio;
                 document.getElementById('suggestedAvatar').innerText = suggestedAvatar;
 
-                // --- حالة الحساب ---
                 const health = calculateHealthScore(suggestedBio, followersCount);
                 drawHealthGauge(health.score);
 
-                // --- توقعات النمو ---
                 if (followersCount > 0) {
                     drawGrowthChart(followersCount);
                 } else {
                     document.getElementById('growthCard').style.display = 'none';
                 }
 
-                // --- خطة المحتوى ---
                 const rows = [
                     { d: "السبت", c: "فيديو قصير (أجمل 5 أهداف في مباريات الأمس) + تعليق صوتي", t: "04:30 م" },
-                    { d: "الاثنين", c: "منشور كاروسيل (توقع نتيجة الكلاسيكو القادم + استفتاء)",
-                    t: "09:00 م" },
+                    { d: "الاثنين", c: "منشور كاروسيل (توقع نتيجة الكلاسيكو القادم + استفتاء)", t: "09:00 م" },
                     { d: "الأربعاء", c: "مقطع ترفيهي (لحظات مضحكة من الملاعب أو تقليد لاعب)", t: "08:00 م" },
-                    { d: "الخميس", c: "بث مباشر قصير (تحليل سريع لمباراة اليوم ومناقشة مع المتابعين)",
-                    t: "10:30 م" }
+                    { d: "الخميس", c: "بث مباشر قصير (تحليل سريع لمباراة اليوم ومناقشة مع المتابعين)", t: "10:30 م" }
                 ];
                 let tableHtml = "";
-                rows.forEach(r => tableHtml +=
-                    `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
+                rows.forEach(r => tableHtml += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
                 document.getElementById('resultTable').innerHTML = tableHtml;
 
-                // --- الهاشتاقات ---
-                const tags = [
-                    "#كرة_القدم", "#أهداف_عالمية", "#دوري_المحترفين", "#رياضة_ترفيه",
-                    "#ملاعب", "#توقعات_المباريات", "#محتوى_رياضي", "#كورة_توك",
-                    "#Football", "#SoccerSkills", "#GoalReels"
-                ];
+                const tags = ["#كرة_القدم", "#أهداف_عالمية", "#دوري_المحترفين", "#رياضة_ترفيه", "#ملاعب", "#توقعات_المباريات", "#محتوى_رياضي", "#كورة_توك", "#Football", "#SoccerSkills", "#GoalReels"];
                 let tagsHtml = "";
                 tags.forEach(t => tagsHtml += `<div class="hashtag-item">${t}</div>`);
                 document.getElementById('dynamicHashtags').innerHTML = tagsHtml;
 
-                // --- الهاشتاقات الرائجة ---
                 fetchTrendingHashtags();
-
-                // --- قائمة المهام ---
                 renderTaskList();
 
-                // --- تخزين للـ PDF ---
                 analysisData = {
                     suggestedName,
                     suggestedBio,
@@ -1097,34 +1088,22 @@
                     date: new Date().toLocaleDateString('ar-EG')
                 };
 
-                // تمرير للنتائج
                 document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
-
             }, 2200);
         }
 
-        // ============ تصدير PDF ============
         function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-            // دعم العربية (خط مبسط)
             doc.setR2L(true);
-
-            // عنوان
             doc.setFontSize(22);
             doc.setTextColor(0, 242, 254);
             doc.text('تقرير التحليل الذكي - SocialAnalyzer AI', 105, 20, { align: 'center' });
-
             doc.setFontSize(12);
             doc.setTextColor(126, 132, 163);
             doc.text(`تاريخ التقرير: ${analysisData.date || new Date().toLocaleDateString('ar-EG')}`, 105, 30, { align: 'center' });
 
             let y = 45;
-            doc.setFontSize(14);
-            doc.setTextColor(255, 255, 255);
-
-            // نوع الحساب
             doc.setFontSize(13);
             doc.setTextColor(0, 242, 254);
             doc.text('نوع الحساب:', 20, y);
@@ -1133,7 +1112,6 @@
             doc.text(analysisData.accountType || '-', 20, y + 7);
             y += 18;
 
-            // اسم مقترح
             doc.setFontSize(13);
             doc.setTextColor(0, 242, 254);
             doc.text('الاسم المقترح:', 20, y);
@@ -1142,7 +1120,6 @@
             doc.text(analysisData.suggestedName || '-', 20, y + 7);
             y += 18;
 
-            // بايو
             doc.setFontSize(13);
             doc.setTextColor(0, 242, 254);
             doc.text('البايو:', 20, y);
@@ -1155,7 +1132,6 @@
             });
             y += 10;
 
-            // صحة الحساب
             doc.setFontSize(13);
             doc.setTextColor(0, 242, 254);
             doc.text('درجة صحة الحساب:', 20, y);
@@ -1164,19 +1140,16 @@
             doc.text(`${analysisData.healthScore || 0}%`, 20, y + 7);
             y += 18;
 
-            // توقعات النمو
             if (analysisData.followersCount) {
                 doc.setFontSize(13);
                 doc.setTextColor(0, 242, 254);
                 doc.text('توقعات النمو:', 20, y);
                 doc.setFontSize(11);
                 doc.setTextColor(200, 200, 200);
-                doc.text(`من ${analysisData.followersCount} متابع إلى ${Math.round(analysisData.followersCount * 1.35)} خلال 30 يوم`,
-                    20, y + 7);
+                doc.text(`من ${analysisData.followersCount} متابع إلى ${Math.round(analysisData.followersCount * 1.35)} خلال 30 يوم`, 20, y + 7);
                 y += 18;
             }
 
-            // خطة النشر
             doc.setFontSize(13);
             doc.setTextColor(0, 242, 254);
             doc.text('خطة النشر:', 20, y);
@@ -1191,7 +1164,6 @@
             }
             y += 10;
 
-            // هاشتاقات
             doc.setFontSize(13);
             doc.setTextColor(0, 242, 254);
             doc.text('الهاشتاقات المقترحة:', 20, y);
@@ -1202,15 +1174,12 @@
                 doc.text(analysisData.tags.join('  '), 20, y, { maxWidth: 170 });
             }
 
-            // تذييل
             doc.setFontSize(8);
             doc.setTextColor(100, 100, 100);
             doc.text('تم إنشاؤه بواسطة SocialAnalyzer AI | youtube.com/@t37s | t.me/jz8x2', 105, 280, { align: 'center' });
-
             doc.save(`تقرير_تحليل_${analysisData.suggestedName || 'الحساب'}.pdf`);
         }
 
-        // ============ الحفظ السحابي ============
         function saveToCloud() {
             if (!currentUser) return alert("يرجى تسجيل الدخول بحساب جوجل أولاً لحفظ خطتك!");
             db.collection("user_analytics").add({
@@ -1251,4 +1220,4 @@
         }
     </script>
 </body>
-        </html>
+</html>
