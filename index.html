@@ -354,7 +354,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // إعدادات الفايربيس الحقيقية والخاصة بمشروعك
     const firebaseConfig = {
         apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
         authDomain: "surtur-5d667.firebaseapp.com",
@@ -370,6 +369,12 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     let currentUser = null;
+
+    // إجبار الفايربيس على حفظ الجلسة محلياً داخل المتصفح لتخطي حظر ملفات ارتباط الطرف الثالث
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log("تم تثبيت نظام الحفظ المحلي بنجاح.");
+    }).catch((e) => console.error("خطأ التثبيت المحلى:", e));
 
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -394,15 +399,22 @@
         }
     });
 
-    // دالة تسجيل الدخول المحدثة بنظام Popup لإجبار متصفحات الموبايل على الاستجابة
+    // استخدام طريقة الفتح المنبثق المحمي من الكوكيز الخبيثة
     function toggleAuth() {
         if(!currentUser) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then((result) => {
+            // طلب الحساب بشكل صريح لمنع التوجيه المكسور
+            provider.setCustomParameters({ prompt: 'select_account' });
+            
+            auth.signInWithPopup(provider)
+            .then((result) => {
                 currentUser = result.user;
-            }).catch((error) => {
-                console.error("خطأ تسجيل الدخول: ", error);
-                alert("فشل الاتصال بجوجل: " + error.message);
+                console.log("تم الدخول بنجاح للحساب:", currentUser.displayName);
+            })
+            .catch((error) => {
+                console.error("فشل الدخول بالنافذة: ", error);
+                // حل احتياطي أخير إذا فشل البوب أب تماماً بسبب المتصفح
+                auth.signInWithRedirect(provider);
             });
         } else {
             auth.signOut().then(() => location.reload());
@@ -464,7 +476,7 @@
         db.collection("user_analytics").where("uid", "==", currentUser.uid).get().then(snap => {
             let html = "";
             if(snap.empty) {
-                html = "لا يوجد أي خطط محفوظة in حسابك حتى الآن.";
+                html = "لا يوجد أي خطط محفوظة في حسابك حتى الآن.";
             } else {
                 snap.forEach(doc => {
                     const data = doc.data();
