@@ -261,21 +261,25 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // ⚠️ استبدل هذه الإعدادات ببيانات مشروعك الحقيقي من Firebase لاحقاً لحفظ الجداول
+    // إعدادات Firebase الحقيقية الخاصة بمشروعك الحركي المستخرجة من صورتك
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
+        authDomain: "surtur-5d667.firebaseapp.com",
+        databaseURL: "https://surtur-5d667-default-rtdb.firebaseio.com",
+        projectId: "surtur-5d667",
+        storageBucket: "surtur-5d667.firebasestorage.app",
+        messagingSenderId: "360949474558",
+        appId: "1:360949474558:web:665fb8154017e2a17631af",
+        measurementId: "G-8GEQZJJGSB"
     };
 
+    // تهيئة الخدمات
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     let currentUser = null;
 
+    // تتبع حالة تسجيل الدخول للمستخدم
     auth.onAuthStateChanged(user => {
         if (user) {
             currentUser = user;
@@ -286,12 +290,20 @@
         }
     });
 
+    // تشغيل نافذة تسجيل الدخول المنبثقة من جوجل
     function toggleAuth() {
         if (!currentUser) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(err => console.log(err));
+            auth.signInWithPopup(provider)
+                .then(result => {
+                    alert("أهلاً بك يا " + result.user.displayName + "! تم تسجيل دخولك بنجاح.");
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("حدث خطأ أثناء تسجيل الدخول، تأكد من تفعيل Google Provider وتفويض الدومين في فايربيس.");
+                });
         } else {
-            auth.signOut();
+            auth.signOut().then(() => alert("تم تسجيل الخروج."));
         }
     }
 
@@ -310,24 +322,44 @@
 
     function startAIAnalysis() {
         if(document.getElementById('fileInput').files.length === 0) {
-            alert("يرجى اختيار صورة أولاً!");
+            alert("يرجى اختيار صورة لملفك الشخصي أولاً للبدء!");
             return;
         }
         document.getElementById('loader').style.display = 'block';
         setTimeout(() => {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('dashboard').style.display = 'grid';
+            document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' });
         }, 2000);
     }
 
+    // حفظ البيانات الفعلي داخل الـ Firestore Cloud Database
     function saveToFirebase() {
         if (!currentUser) {
-            alert("يرجى تسجيل الدخول أولاً بحساب جوجل لحفظ الجدول سحابياً!");
+            alert("⚠️ يرجى تسجيل الدخول بحساب جوجل أولاً لتتمكن من حفظ جداولك سحابياً!");
             return;
         }
-        alert("سيتم الحفظ فور تهيئة مفاتيح الفايربيس الخاصة بك!");
+
+        const dataToSave = {
+            uid: currentUser.uid,
+            userName: currentUser.displayName,
+            savedAt: new Date(),
+            tableData: [
+                { day: "السبت", content: "فيديو تعليمي سريع (ريلز/تيك توك)", time: "06:00 مساءً", tags: "#تسويق #صناعة_محتوى" },
+                { day: "الاثنين", content: "منشور تفاعلي خلف الكواليس", time: "08:30 مساءً", tags: "#يوميات #ستوري" },
+                { day: "الأربعاء", content: "حل مشكلة شائعة للمتابعين", time: "07:15 مساءً", tags: "#نصائح_ذكية #تقنية" }
+            ]
+        };
+
+        db.collection("user_schedules").add(dataToSave)
+            .then((docRef) => {
+                alert("🎉 ممتاز جداً! تم حفظ جدولك بنجاح في قاعدة البيانات السحابية برقم مرجعي: " + docRef.id);
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+                alert("خطأ: لم نتمكن من الحفظ. تأكد من ضبط قواعد الحماية (Rules) في Firestore على وضع الاختبار.");
+            });
     }
 </script>
 </body>
 </html>
-
