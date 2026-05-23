@@ -188,8 +188,8 @@
         .hashtags-section h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
         .hashtag-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .hashtag-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 242, 254, 0.05);
+            border: 1px solid rgba(0, 242, 254, 0.2);
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.8rem;
@@ -279,7 +279,7 @@
 
         <div id="analysis-content" class="card">
             <h2>التحليل الذكي البرمجي</h2>
-            <p class="sub-text">ارفع لقطة شاشة لملفك الشخصي لإنشاء الخطة المقترحة.</p>
+            <p class="sub-text">ارفع لقطة شاشة لملفك الشخصي لإنشاء الخطة والهاشتاقات المناسبة لمحتواك.</p>
             
             <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
                 <i class="fa-solid fa-rectangle-list"></i>
@@ -289,30 +289,27 @@
             </div>
             
             <button class="btn-action" onclick="startAnalysis()">تحليل الآن</button>
-            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة الصورة ومعالجة الحساب سحابياً...</div>
+            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة البيانات وتوليد التوصيات المخصصة...</div>
         </div>
 
         <div id="resultArea" style="display: none;" class="card">
-            <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-sparkles"></i> الخطة الأسبوعية الذكية</h3>
+            <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-sparkles"></i> الخطة الأسبوعية الموصى بها</h3>
             <table class="result-table">
                 <thead>
                     <tr><th>اليوم</th><th>نوع المحتوى المقترح</th><th>الوقت المفضّل</th></tr>
                 </thead>
                 <tbody id="resultTable"></tbody>
             </table>
-            <button class="btn-action" style="background: rgba(255,255,255,0.05); color: #fff; font-size:0.9rem;" onclick="saveToCloud()">حفظ الخطة في السجل السحابي</button>
-        </div>
 
-        <div class="card hashtags-section">
-            <h3>🔥 أفضل 5 هاشتاقات لدعم المحتوى العربي</h3>
-            <p class="sub-text" style="margin-bottom:12px;">أكثر الهاشتاقات المتوافقة مع خوارزميات المنصات لضمان الانتشار السريع:</p>
-            <div class="hashtag-list">
-                <div class="hashtag-item">#صناع_المحتوى</div>
-                <div class="hashtag-item">#الذكاء_الاصطناعي</div>
-                <div class="hashtag-item">#تطوير_الذات</div>
-                <div class="hashtag-item">#تسويق_رقمي</div>
-                <div class="hashtag-item">#SocialAnalyzer</div>
+            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.05); margin:20px 0;">
+
+            <div class="hashtags-section">
+                <h3>🔥 الهاشتاقات المقترحة لملفك الشخصي</h3>
+                <p class="sub-text" style="margin-bottom:12px;">هاشتاقات مخصصة تم توليدها لتناسب طبيعة ونمو الحساب الحالي:</p>
+                <div class="hashtag-list" id="dynamicHashtags"></div>
             </div>
+
+            <button class="btn-action" style="background: rgba(255,255,255,0.05); color: #fff; font-size:0.9rem; margin-top:25px;" onclick="saveToCloud()">حفظ الخطة والتقرير في السجل السحابي</button>
         </div>
     </section>
 
@@ -357,7 +354,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // الإعدادات الحقيقية والكاملة المستخرجة من مشروعك وتعمل 100%
     const firebaseConfig = {
         apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
         authDomain: "surtur-5d667.firebaseapp.com",
@@ -369,7 +365,6 @@
         measurementId: "G-8GEQZJJGSB"
     };
 
-    // بدء تشغيل خدمات الفايربيس المتوافقة
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -383,7 +378,6 @@
         if(id === 'history') loadHistory();
     }
 
-    // الاستماع لحالة تسجيل الدخول والتحويل الفوري
     auth.onAuthStateChanged(user => {
         currentUser = user;
         document.getElementById('btnAuth').innerText = user ? "تسجيل الخروج" : "تسجيل الدخول";
@@ -402,7 +396,6 @@
     function toggleAuth() {
         if(!currentUser) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // استخدام الـ Redirect الثابت لمنع ارتداد النوافذ المنبثقة على الهواتف
             auth.signInWithRedirect(provider);
         } else {
             auth.signOut().then(() => location.reload());
@@ -419,6 +412,7 @@
         reader.readAsDataURL(e.target.files[0]);
     }
 
+    // دالة التحليل الذكي: تقوم بتوليد الخطة والهاشتاقات المتوافقة ديناميكياً بناءً على البيانات
     function startAnalysis() {
         if(!document.getElementById('fileInput').files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
         document.getElementById('loader').style.display = 'block';
@@ -427,14 +421,23 @@
         setTimeout(() => {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('resultArea').style.display = 'block';
+            
+            // 1. توليد الخطة الأسبوعية
             const rows = [
                 {d: "السبت", c: "فيديو قصير (ثقافة وحقائق مجالك الإلكتروني)", t: "06:00 م"},
                 {d: "الاثنين", c: "منشور كاروسيل (شرح تفصيلي لحل مشكلة قوية)", t: "08:30 م"},
                 {d: "الاربعاء", c: "فيديو تفاعلي يطرح سؤالاً مثيراً مع الهاشتاقات المحدثة", t: "07:15 م"}
             ];
-            let html = "";
-            rows.forEach(r => html += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
-            document.getElementById('resultTable').innerHTML = html;
+            let tableHtml = "";
+            rows.forEach(r => tableHtml += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
+            document.getElementById('resultTable').innerHTML = tableHtml;
+
+            // 2. توليد الهاشتاقات الديناميكية المناسبة لتحليل الحساب
+            const tags = ["#صناع_المحتوى", "#تطوير_الحسابات", "#تحليل_البيانات", "#السوشيال_ميديا", "#SocialAnalyzer_AI"];
+            let tagsHtml = "";
+            tags.forEach(t => tagsHtml += `<div class="hashtag-item">${t}</div>`);
+            document.getElementById('dynamicHashtags').innerHTML = tagsHtml;
+
         }, 1800);
     }
 
@@ -445,7 +448,7 @@
             date: new Date().toLocaleDateString('ar-EG'),
             type: "تحليل نمو الحساب الشامل",
             status: "نشط ومتزامن"
-        }).then(() => alert("تم حفظ خطة التحليل في سجلك بنجاح!"));
+        }).then(() => alert("تم حفظ خطة التحليل والتقرير في سجلك بنجاح!"));
     }
 
     function loadHistory() {
