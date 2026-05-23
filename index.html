@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SocialAnalyzer AI</title>
-    
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5879603063679468" crossorigin="anonymous"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         :root {
@@ -72,7 +74,6 @@
             cursor: pointer;
             transition: all 0.25s;
         }
-
         .auth-btn:hover {
             background: var(--primary);
             color: var(--bg-dark);
@@ -88,15 +89,20 @@
         .section {
             display: none;
         }
-
         .section.active {
             display: block;
             animation: viewSlide 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes viewSlide {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card {
@@ -105,14 +111,27 @@
             padding: 25px 20px;
             border: 1px solid rgba(255, 255, 255, 0.03);
             margin-bottom: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
-        h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
-        .sub-text { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .sub-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
 
-        #welcome-content { display: block; text-align: center; }
-        #analysis-content { display: none; }
+        #welcome-content {
+            display: block;
+            text-align: center;
+        }
+        #analysis-content {
+            display: none;
+        }
 
         .drop-zone {
             border: 2px dashed rgba(0, 242, 254, 0.3);
@@ -123,23 +142,53 @@
             cursor: pointer;
             transition: all 0.25s;
         }
-
         .drop-zone:hover {
             border-color: var(--primary);
             background: rgba(0, 242, 254, 0.03);
         }
-
         .drop-zone i {
             font-size: 2.5rem;
             color: var(--primary);
             margin-bottom: 12px;
             text-shadow: 0 0 15px var(--glow);
         }
+        .drop-zone p {
+            font-size: 0.9rem;
+            color: #d1d5db;
+        }
 
-        .drop-zone p { font-size: 0.9rem; color: #d1d5db; }
+        #fileInput {
+            display: none;
+        }
+        #previewImg {
+            max-width: 100%;
+            max-height: 180px;
+            border-radius: 12px;
+            margin-top: 15px;
+            display: none;
+            object-fit: contain;
+        }
 
-        #fileInput { display: none; }
-        #previewImg { max-width: 100%; max-height: 180px; border-radius: 12px; margin-top: 15px; display: none; object-fit: contain; }
+        .input-field {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #fff;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            outline: none;
+            transition: 0.25s;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.1);
+        }
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
 
         .btn-action {
             background: linear-gradient(135deg, var(--secondary), var(--primary));
@@ -155,10 +204,22 @@
             box-shadow: 0 8px 25px rgba(0, 242, 254, 0.2);
             transition: all 0.25s;
         }
+        .btn-action:active {
+            transform: scale(0.98);
+        }
+        .btn-pdf {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.3);
+        }
 
-        .btn-action:active { transform: scale(0.98); }
-
-        .spinner { display: none; color: var(--primary); font-size: 0.9rem; margin-top: 15px; text-align: center; }
+        .spinner {
+            display: none;
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-top: 15px;
+            text-align: center;
+        }
 
         .result-table {
             width: 100%;
@@ -166,11 +227,26 @@
             border-spacing: 0 10px;
             margin-top: 15px;
         }
-
-        .result-table th { color: var(--text-muted); font-size: 0.8rem; padding: 0 10px; text-align: right; }
-        .result-table td { background: rgba(255,255,255,0.02); padding: 12px; font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.02); }
-        .result-table tr td:first-child { border-radius: 0 10px 10px 0; color: var(--primary); font-weight: bold; }
-        .result-table tr td:last-child { border-radius: 10px 0 0 10px; }
+        .result-table th {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            padding: 0 10px;
+            text-align: right;
+        }
+        .result-table td {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+        .result-table tr td:first-child {
+            border-radius: 0 10px 10px 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        .result-table tr td:last-child {
+            border-radius: 10px 0 0 10px;
+        }
 
         .identity-box {
             background: rgba(255, 255, 255, 0.02);
@@ -179,14 +255,139 @@
             padding: 15px;
             margin-top: 15px;
         }
-        .identity-item { margin-bottom: 12px; }
-        .identity-item:last-child { margin-bottom: 0; }
-        .identity-label { font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-bottom: 4px; }
-        .identity-value { font-size: 0.9rem; color: #fff; background: rgba(0,0,0,0.2); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.02); }
+        .identity-item {
+            margin-bottom: 12px;
+        }
+        .identity-item:last-child {
+            margin-bottom: 0;
+        }
+        .identity-label {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .identity-value {
+            font-size: 0.9rem;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        /* Health Score */
+        .health-container {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .health-circle {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+        }
+        .health-circle canvas {
+            width: 140px;
+            height: 140px;
+        }
+        .health-percent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .health-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Account Type Badge */
+        .account-type-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            color: var(--primary);
+        }
+
+        /* Growth Chart Container */
+        .chart-container {
+            position: relative;
+            height: 250px;
+            margin: 15px 0;
+        }
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Task Manager */
+        .task-list {
+            list-style: none;
+            padding: 0;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .task-item:hover {
+            background: rgba(0, 242, 254, 0.03);
+        }
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s;
+            flex-shrink: 0;
+        }
+        .task-item.done .task-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .task-item.done .task-checkbox i {
+            color: var(--bg-dark);
+            font-size: 0.7rem;
+        }
+        .task-item.done .task-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+        .task-text {
+            font-size: 0.9rem;
+            flex: 1;
+        }
+        .task-badge {
+            font-size: 0.7rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: var(--text-muted);
+        }
 
         .archive-item {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 14px;
             padding: 15px;
             display: flex;
@@ -194,13 +395,36 @@
             align-items: center;
             margin-bottom: 12px;
         }
+        .archive-meta h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        .archive-meta span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .status-badge {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
 
-        .archive-meta h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 3px; }
-        .archive-meta span { font-size: 0.75rem; color: var(--text-muted); }
-        .status-badge { background: rgba(0, 242, 254, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-
-        .hashtags-section h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
-        .hashtag-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .hashtags-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .hashtag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
         .hashtag-item {
             background: rgba(0, 242, 254, 0.05);
             border: 1px solid rgba(0, 242, 254, 0.2);
@@ -210,8 +434,36 @@
             color: #d1d5db;
             font-weight: 600;
         }
+        .hashtag-item.trending {
+            background: rgba(255, 94, 0, 0.1);
+            border-color: rgba(255, 94, 0, 0.3);
+            color: #ff9a00;
+            animation: pulseTrend 2s infinite;
+        }
+        @keyframes pulseTrend {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 94, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(255, 94, 0, 0);
+            }
+        }
+        .trend-badge {
+            font-size: 0.65rem;
+            background: #ff5e00;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 8px;
+            margin-right: 4px;
+        }
 
-        .contact-container { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .contact-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
         .contact-link {
             color: #fff;
             text-decoration: none;
@@ -225,11 +477,25 @@
             font-size: 0.95rem;
             transition: all 0.25s;
         }
-        .link-insta { background: var(--accent-insta); box-shadow: 0 8px 20px rgba(221, 42, 123, 0.25); }
-        .link-telegram { background: var(--accent-telegram); box-shadow: 0 8px 20px rgba(34, 158, 217, 0.25); }
-        .link-youtube { background: var(--accent-youtube); box-shadow: 0 8px 20px rgba(255, 0, 0, 0.25); }
-        .link-rush { background: linear-gradient(135deg, #ff9a00, #ff5e00); box-shadow: 0 8px 20px rgba(255, 94, 0, 0.3); }
-        .contact-link:active { transform: scale(0.98); }
+        .link-insta {
+            background: var(--accent-insta);
+            box-shadow: 0 8px 20px rgba(221, 42, 123, 0.25);
+        }
+        .link-telegram {
+            background: var(--accent-telegram);
+            box-shadow: 0 8px 20px rgba(34, 158, 217, 0.25);
+        }
+        .link-youtube {
+            background: var(--accent-youtube);
+            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.25);
+        }
+        .link-rush {
+            background: linear-gradient(135deg, #ff9a00, #ff5e00);
+            box-shadow: 0 8px 20px rgba(255, 94, 0, 0.3);
+        }
+        .contact-link:active {
+            transform: scale(0.98);
+        }
 
         .bottom-nav {
             position: fixed;
@@ -244,7 +510,6 @@
             padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
             z-index: 1000;
         }
-
         .nav-item {
             background: none;
             border: none;
@@ -259,307 +524,731 @@
             width: 25%;
             transition: color 0.2s;
         }
-
-        .nav-item i { font-size: 1.2rem; }
-        .nav-item.active { color: var(--primary); }
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+        .nav-item.active {
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="brand">SocialAnalyzer AI</div>
-    <button id="btnAuth" class="auth-btn" onclick="toggleAuth()">جاري الفحص...</button>
-</header>
+    <header>
+        <div class="brand">SocialAnalyzer AI</div>
+        <button id="btnAuth" class="auth-btn" onclick="toggleAuth()">جاري الفحص...</button>
+    </header>
 
-<div class="container">
-    
-    <section id="home" class="section active">
-        
-        <div id="welcome-content" class="card">
-            <h2>التحليل الذكي للمحتوى 👋</h2>
-            <p class="sub-text">يرجى تسجيل الدخول بحساب جوجل لفتح ميزات المنصة المتطورة وقراءة مؤشرات الحساب السحابية.</p>
-            <button class="btn-action" onclick="toggleAuth()">تسجيل الدخول السريع</button>
-        </div>
+    <div class="container">
 
-        <div id="analysis-content" class="card">
-            <h2>التحليل الذكي البرمجي</h2>
-            <p class="sub-text">ارفع لقطة شاشة لملفك الشخصي لإنشاء الخطة والهاشتاقات المناسبة لمحتواك.</p>
-            
-            <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
-                <i class="fa-solid fa-rectangle-list"></i>
-                <p>اضغط لاختيار لقطة الشاشة</p>
-                <input type="file" id="fileInput" accept="image/*" onchange="handleImage(event)">
-                <center><img id="previewImg" alt="المعاينة"></center>
+        <section id="home" class="section active">
+
+            <div id="welcome-content" class="card">
+                <h2>التحليل الذكي للمحتوى 👋</h2>
+                <p class="sub-text">يرجى تسجيل الدخول بحساب جوجل لفتح ميزات المنصة المتطورة وقراءة مؤشرات الحساب السحابية.</p>
+                <button class="btn-action" onclick="toggleAuth()">تسجيل الدخول السريع</button>
             </div>
-            
-            <button class="btn-action" onclick="startAnalysis()">تحليل الآن</button>
-            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة بيانات الصورة وتوليد التوصيات بدقة...</div>
-        </div>
 
-        <div id="resultArea" style="display: none;" class="card">
-            <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-sparkles"></i> الهوية المقترحة المخصصة لحسابك</h3>
-            <div class="identity-box">
-                <div class="identity-item">
-                    <div class="identity-label">الاسم الاحترافي المقترح:</div>
-                    <div class="identity-value" id="suggestedName">جاري التوليد...</div>
+            <div id="analysis-content" class="card">
+                <h2>التحليل الذكي البرمجي</h2>
+                <p class="sub-text">ارفع لقطة شاشة لملفك الشخصي لإنشاء الخطة والهاشتاقات المناسبة لمحتواك.</p>
+
+                <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-solid fa-rectangle-list"></i>
+                    <p>اضغط لاختيار لقطة الشاشة</p>
+                    <input type="file" id="fileInput" accept="image/*" onchange="handleImage(event)">
+                    <center><img id="previewImg" alt="المعاينة"></center>
                 </div>
-                <div class="identity-item">
-                    <div class="identity-label">سيرة ذاتية (Bio) أسطورية:</div>
-                    <div class="identity-value" id="suggestedBio">جاري التوليد...</div>
+
+                <input type="number" id="followersInput" class="input-field" placeholder="عدد المتابعين الحالي (اختياري لتوقعات النمو)" dir="ltr">
+
+                <button class="btn-action" onclick="startAnalysis()">تحليل الآن</button>
+                <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة بيانات الصورة وتوليد التوصيات بدقة...</div>
+            </div>
+
+            <!-- النتائج -->
+            <div id="resultArea" style="display: none;">
+
+                <!-- نوع الحساب -->
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: var(--primary);"><i class="fa-solid fa-microchip"></i> الذكاء التحليلي المتعدد</h3>
+                    <div class="account-type-badge" id="accountType">جاري التحديد...</div>
+                    <p class="sub-text" style="margin-top: 8px;" id="accountTypeDesc"></p>
                 </div>
-                <div class="identity-item">
-                    <div class="identity-label">فكرة صورة البروفايل (Avatar):</div>
-                    <div class="identity-value" id="suggestedAvatar">جاري التوليد...</div>
-                </div>
-            </div>
 
-            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.05); margin:20px 0;">
-
-            <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-calendar-days"></i> خطة صناعة المحتوى المخصصة</h3>
-            <table class="result-table">
-                <thead>
-                    <tr><th>اليوم</th><th>نوع المحتوى المقترح</th><th>الوقت المفضّل</th></tr>
-                </thead>
-                <tbody id="resultTable"></tbody>
-            </table>
-
-            <hr style="border:0; border-top:1px solid rgba(255,255,255,0.05); margin:20px 0;">
-
-            <div class="hashtags-section">
-                <h3>🔥 الهاشتاقات المستهدفة لحسابك</h3>
-                <p class="sub-text" style="margin-bottom:12px;">مجموعات علامات مخصصة تم توليدها لتناسب طبيعة المحتوى:</p>
-                <div class="hashtag-list" id="dynamicHashtags"></div>
-            </div>
-
-            <button class="btn-action" style="background: rgba(255,255,255,0.05); color: #fff; font-size:0.9rem; margin-top:25px;" onclick="saveToCloud()">حفظ الخطة والتقرير في السجل السحابي</button>
-        </div>
-    </section>
-
-    <section id="history" class="section">
-        <div class="card">
-            <h2>سجل التحليلات</h2>
-            <p class="sub-text">استعرض خطط المحتوى والتقارير التي قمت بحفظها سابقاً في الفايربيس.</p>
-            <div id="historyList" style="color: var(--text-muted); font-size: 0.85rem;">قم بتسجيل الدخول لحفظ واستعراض أرشيفك السحابي.</div>
-        </div>
-    </section>
-
-    <section id="contact" class="section">
-        <div class="card" style="text-align: center; padding: 35px 20px;">
-            <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(0, 242, 254, 0.1); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--primary);">
-                <i class="fa-solid fa-headset"></i>
-            </div>
-            <h2>تواصل مع المطور</h2>
-            <p class="sub-text">لديك فكرة ميزة جديدة، استفسار برمجي، أو انضمام لخدماتنا؟ تواصل معنا مباشرة عبر المنصات الرسمية.</p>
-            
-            <div class="contact-container">
-                <a href="https://instagram.com/th2f6" target="_blank" class="contact-link link-insta">
-                    <i class="fab fa-instagram"></i> @th2f6 على إنستغرام
-                </a>
-                <a href="https://youtube.com/@t37s" target="_blank" class="contact-link link-youtube">
-                    <i class="fab fa-youtube"></i> قناة اليوتيوب T37S
-                </a>
-                <a href="https://t.me/jz8x2" target="_blank" class="contact-link link-telegram">
-                    <i class="fab fa-telegram-plane"></i> قناة التيلجرام الرسمية
-                </a>
-                <a href="https://t.me/I_17g" target="_blank" class="contact-link link-rush">
-                    <i class="fas fa-bolt"></i> قناة رشق الحسابات
-                </a>
-            </div>
-        </div>
-    </section>
-
-</div>
-
-<div class="bottom-nav">
-    <button class="nav-item active" id="nav-home" onclick="showSection('home')">
-        <i class="fa-solid fa-house"></i>
-        <span>الرئيسية</span>
-    </button>
-    <button class="nav-item" id="nav-history" onclick="showSection('history')">
-        <i class="fa-solid fa-folder-open"></i>
-        <span>التحليلات</span>
-    </button>
-    <button class="nav-item" id="nav-contact" onclick="showSection('contact')">
-        <i class="fa-solid fa-paper-plane"></i>
-        <span>تواصل معنا</span>
-    </button>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
-        authDomain: "surtur-5d667.firebaseapp.com",
-        databaseURL: "https://surtur-5d667-default-rtdb.firebaseio.com",
-        projectId: "surtur-5d667",
-        storageBucket: "surtur-5d667.firebasestorage.app",
-        messagingSenderId: "360949474558",
-        appId: "1:360949474558:web:665fb8154017e2a17631af",
-        measurementId: "G-8GEQZJJGSB"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    let currentUser = null;
-
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-    .catch((e) => console.error("خطأ التثبيت:", e));
-
-    function showSection(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        document.getElementById('nav-' + id).classList.add('active');
-        if(id === 'history') loadHistory();
-    }
-
-    auth.onAuthStateChanged(user => {
-        currentUser = user;
-        document.getElementById('btnAuth').innerText = user ? "تسجيل الخروج" : "تسجيل الدخول";
-        
-        if (user) {
-            document.getElementById('welcome-content').style.display = 'none';
-            document.getElementById('analysis-content').style.display = 'block';
-            if(document.getElementById('history').classList.contains('active')) loadHistory();
-        } else {
-            document.getElementById('welcome-content').style.display = 'block';
-            document.getElementById('analysis-content').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'none';
-        }
-    });
-
-    function toggleAuth() {
-        if(!currentUser) {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            provider.setCustomParameters({ prompt: 'select_account' });
-            
-            auth.signInWithPopup(provider)
-            .then((result) => { currentUser = result.user; })
-            .catch((error) => {
-                console.error("خطأ البوب أب: ", error);
-                auth.signInWithRedirect(provider);
-            });
-        } else {
-            auth.signOut().then(() => location.reload());
-        }
-    }
-
-    function handleImage(e) {
-        const reader = new FileReader();
-        reader.onload = (f) => { 
-            const img = document.getElementById('previewImg');
-            img.src = f.target.result;
-            img.style.display = 'block';
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
-    // خوارزمية ذكية تقترح هوية ومحتوى متخصص في كرة القدم والترفيه
-    function startAnalysis() {
-        const fileInput = document.getElementById('fileInput');
-        if(!fileInput.files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
-        
-        document.getElementById('loader').style.display = 'block';
-        document.getElementById('resultArea').style.display = 'none';
-        
-        setTimeout(() => {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('resultArea').style.display = 'block';
-            
-            // أسماء احترافية لحسابات كرة القدم والترفيه
-            const namePool = [
-                "عالم المستديرة | كرة قدم",
-                "ملاعب العرب | تحليل ونجوم",
-                "إثارة المدرجات | ترفيه رياضي",
-                "هداف توك | أهداف + مهارات",
-                "صدى الرياضة | كرة وترفيه"
-            ];
-            const bioPool = [
-                "⚽️ كل ما يخص كرة القدم العالمية والعربية\n🎯 تحليلات، أهداف، لقطات حصرية\n🎬 فيديوهات ترفيهية يومية، تابعنا لايفوتك شيء",
-                "🏟️ خلف الكواليس وأسرار الملاعب\n🔥 ننقل لك الإثارة والمنوعات الرياضية\n📩 للتواصل والإعلانات: رابط التواصل",
-                "🥅 شغف كرة القدم بشكل جديد\n🎞️ محتوى ترفيهي رياضي يومي\n💬 تفاعل وشاركنا توقعاتك",
-                "🌟 أبرز لحظات كرة القدم العالمية\n🎥 فيديوهات قصيرة ممتعة\n📊 إحصائيات وطرائف كروية",
-                "🏆 دوري أبطال أوروبا، الدوري السعودي\n🎤 تعليقات صوتية مميزة\n📌 تابع البثوث المباشرة"
-            ];
-            const avatarPool = [
-                "صورة كرة قدم احترافية بتأثيرات ضوئية زرقاء وخلفية ملعب تحت الأضواء الكاشفة.",
-                "شعار قناة رياضي يجمع بين كرة قدم وأيقونة بث مع لمسة نيون عصرية.",
-                "صورة لاعب مشهور (مع مراعاة الحقوق) مع تعديل فني وإطار ذهبي.",
-                "تصميم جرافيكي لكرة قدم متوهجة باللونين الأزرق والأبيض على خلفية داكنة.",
-                "أفاتار كرتوني لشخصية مشجعة ترتدي قميص نادي شهير بأسلوب 3D مرح."
-            ];
-
-            const seed = Math.floor(Math.random() * namePool.length) % namePool.length;
-            
-            document.getElementById('suggestedName').innerText = namePool[seed];
-            document.getElementById('suggestedBio').innerText = bioPool[seed];
-            document.getElementById('suggestedAvatar').innerText = avatarPool[seed];
-
-            // خطة محتوى كروية ترفيهية بمواعيد ذكية
-            const rows = [
-                {d: "السبت", c: "فيديو قصير (أجمل 5 أهداف في مباريات الأمس) + تعليق صوتي", t: "04:30 م"},
-                {d: "الاثنين", c: "منشور كاروسيل (توقع نتيجة الكلاسيكو القادم + استفتاء)", t: "09:00 م"},
-                {d: "الأربعاء", c: "مقطع ترفيهي (لحظات مضحكة من الملاعب أو تقليد لاعب)", t: "08:00 م"},
-                {d: "الخميس", c: "بث مباشر قصير (تحليل سريع لمباراة اليوم ومناقشة مع المتابعين)", t: "10:30 م"}
-            ];
-            
-            let tableHtml = "";
-            rows.forEach(r => tableHtml += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
-            document.getElementById('resultTable').innerHTML = tableHtml;
-
-            // هاشتاقات رياضية وترفيهية مستهدفة
-            const tags = [
-                "#كرة_القدم", "#أهداف_عالمية", "#دوري_المحترفين", "#رياضة_ترفيه",
-                "#ملاعب", "#توقعات_المباريات", "#محتوى_رياضي", "#كورة_توك",
-                "#Football", "#SoccerSkills", "#GoalReels"
-            ];
-            let tagsHtml = "";
-            tags.forEach(t => tagsHtml += `<div class="hashtag-item">${t}</div>`);
-            document.getElementById('dynamicHashtags').innerHTML = tagsHtml;
-
-        }, 2200);
-    }
-
-    function saveToCloud() {
-        if(!currentUser) return alert("يرجى تسجيل الدخول بحساب جوجل أولاً لحفظ خطتك!");
-        db.collection("user_analytics").add({
-            uid: currentUser.uid,
-            date: new Date().toLocaleDateString('ar-EG'),
-            type: "تحليل نمو الحساب (كرة قدم/ترفيه)",
-            status: "نشط ومتزامن"
-        }).then(() => alert("تم حفظ خطة التحليل السحابية متضمنة الهوية والبايو والجدول بنجاح!"));
-    }
-
-    function loadHistory() {
-        if(!currentUser) {
-            document.getElementById('historyList').innerHTML = "قم بتسجيل الدخول لحفظ واستعراض أرشيفك السحابي.";
-            return;
-        }
-        document.getElementById('historyList').innerHTML = "جاري جلب بياناتك السحابية الموثقة...";
-        db.collection("user_analytics").where("uid", "==", currentUser.uid).get().then(snap => {
-            let html = "";
-            if(snap.empty) {
-                html = "لا يوجد أي خطط محفوظة في حسابك حتى الآن.";
-            } else {
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    html += `
-                    <div class="archive-item">
-                        <div class="archive-meta">
-                            <h4>${data.type}</h4>
-                            <span><i class="far fa-calendar-alt"></i> ${data.date}</span>
+                <!-- حالة الحساب -->
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: var(--primary);"><i class="fa-solid fa-heart-pulse"></i> حالة الحساب (Health Score)</h3>
+                    <div class="health-container">
+                        <div class="health-circle">
+                            <canvas id="healthGauge" width="140" height="140"></canvas>
+                            <div class="health-percent" id="healthPercent">0%</div>
                         </div>
-                        <div class="status-badge">${data.status}</div>
-                    </div>`;
+                        <p class="health-label" id="healthLabel">جاري التقييم...</p>
+                    </div>
+                </div>
+
+                <!-- الهوية -->
+                <div class="card">
+                    <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-sparkles"></i> الهوية المقترحة المخصصة لحسابك</h3>
+                    <div class="identity-box">
+                        <div class="identity-item">
+                            <div class="identity-label">الاسم الاحترافي المقترح:</div>
+                            <div class="identity-value" id="suggestedName">جاري التوليد...</div>
+                        </div>
+                        <div class="identity-item">
+                            <div class="identity-label">سيرة ذاتية (Bio) أسطورية:</div>
+                            <div class="identity-value" id="suggestedBio">جاري التوليد...</div>
+                        </div>
+                        <div class="identity-item">
+                            <div class="identity-label">فكرة صورة البروفايل (Avatar):</div>
+                            <div class="identity-value" id="suggestedAvatar">جاري التوليد...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- توقعات النمو -->
+                <div class="card" id="growthCard">
+                    <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-chart-line"></i> توقعات النمو الذكية (30 يوم)</h3>
+                    <div class="chart-container">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                    <p class="sub-text" style="text-align: center;" id="growthSummary"></p>
+                </div>
+
+                <!-- خطة المحتوى -->
+                <div class="card">
+                    <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-calendar-days"></i> خطة صناعة المحتوى المخصصة</h3>
+                    <table class="result-table">
+                        <thead>
+                            <tr><th>اليوم</th><th>نوع المحتوى المقترح</th><th>الوقت المفضّل</th></tr>
+                        </thead>
+                        <tbody id="resultTable"></tbody>
+                    </table>
+                </div>
+
+                <!-- الهاشتاقات + الرائجة -->
+                <div class="card">
+                    <div class="hashtags-section">
+                        <h3>🔥 الهاشتاقات المستهدفة لحسابك</h3>
+                        <p class="sub-text" style="margin-bottom:12px;">مجموعات علامات مخصصة تم توليدها لتناسب طبيعة المحتوى:</p>
+                        <div class="hashtag-list" id="dynamicHashtags"></div>
+                    </div>
+                    <hr style="border:0; border-top:1px solid rgba(255,255,255,0.05); margin:20px 0;">
+                    <div class="hashtags-section">
+                        <h3>📈 الهاشتاقات الرائجة حالياً (Live Trends)</h3>
+                        <p class="sub-text" style="margin-bottom:12px;">آخر تحديث للهاشتاقات الأكثر تداولاً في منطقتك:</p>
+                        <div class="hashtag-list" id="trendingHashtags"></div>
+                    </div>
+                </div>
+
+                <!-- قائمة المهام -->
+                <div class="card">
+                    <h3 style="font-size: 1.1rem; color: var(--primary);"><i class="fa-solid fa-list-check"></i> قائمة المهام اليومية</h3>
+                    <p class="sub-text">اضغط على المهمة عند إنجازها ليتم حفظها في سجلك السحابي:</p>
+                    <ul class="task-list" id="taskList"></ul>
+                    <p style="text-align: center; margin-top: 12px; font-size: 0.8rem; color: var(--text-muted);">
+                        <span id="completedTasks">0</span>/<span id="totalTasks">0</span> مهام مكتملة
+                    </p>
+                </div>
+
+                <!-- أزرار -->
+                <button class="btn-action" onclick="saveToCloud()">💾 حفظ الخطة والتقرير في السجل السحابي</button>
+                <button class="btn-action btn-pdf" onclick="exportPDF()">📄 تصدير التقرير كـ PDF</button>
+            </div>
+        </section>
+
+        <section id="history" class="section">
+            <div class="card">
+                <h2>سجل التحليلات والإنجازات</h2>
+                <p class="sub-text">استعرض خطط المحتوى والتقارير والمهام التي قمت بحفظها سابقاً في الفايربيس.</p>
+                <div id="historyList" style="color: var(--text-muted); font-size: 0.85rem;">قم بتسجيل الدخول لحفظ واستعراض أرشيفك السحابي.</div>
+            </div>
+        </section>
+
+        <section id="contact" class="section">
+            <div class="card" style="text-align: center; padding: 35px 20px;">
+                <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(0, 242, 254, 0.1); margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--primary);">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <h2>تواصل مع المطور</h2>
+                <p class="sub-text">لديك فكرة ميزة جديدة، استفسار برمجي، أو انضمام لخدماتنا؟ تواصل معنا مباشرة عبر المنصات الرسمية.</p>
+
+                <div class="contact-container">
+                    <a href="https://instagram.com/th2f6" target="_blank" class="contact-link link-insta">
+                        <i class="fab fa-instagram"></i> @th2f6 على إنستغرام
+                    </a>
+                    <a href="https://youtube.com/@t37s" target="_blank" class="contact-link link-youtube">
+                        <i class="fab fa-youtube"></i> قناة اليوتيوب T37S
+                    </a>
+                    <a href="https://t.me/jz8x2" target="_blank" class="contact-link link-telegram">
+                        <i class="fab fa-telegram-plane"></i> قناة التيلجرام الرسمية
+                    </a>
+                    <a href="https://t.me/I_17g" target="_blank" class="contact-link link-rush">
+                        <i class="fas fa-bolt"></i> قناة رشق الحسابات
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" id="nav-home" onclick="showSection('home')">
+            <i class="fa-solid fa-house"></i>
+            <span>الرئيسية</span>
+        </button>
+        <button class="nav-item" id="nav-history" onclick="showSection('history')">
+            <i class="fa-solid fa-folder-open"></i>
+            <span>التحليلات</span>
+        </button>
+        <button class="nav-item" id="nav-contact" onclick="showSection('contact')">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>تواصل معنا</span>
+        </button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
+            authDomain: "surtur-5d667.firebaseapp.com",
+            databaseURL: "https://surtur-5d667-default-rtdb.firebaseio.com",
+            projectId: "surtur-5d667",
+            storageBucket: "surtur-5d667.firebasestorage.app",
+            messagingSenderId: "360949474558",
+            appId: "1:360949474558:web:665fb8154017e2a17631af",
+            measurementId: "G-8GEQZJJGSB"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        let currentUser = null;
+        let analysisData = {}; // لتخزين بيانات التحليل للـ PDF
+
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+            .catch((e) => console.error("خطأ التثبيت:", e));
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('nav-' + id).classList.add('active');
+            if (id === 'history') loadHistory();
+        }
+
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            document.getElementById('btnAuth').innerText = user ? "تسجيل الخروج" : "تسجيل الدخول";
+
+            if (user) {
+                document.getElementById('welcome-content').style.display = 'none';
+                document.getElementById('analysis-content').style.display = 'block';
+                if (document.getElementById('history').classList.contains('active')) loadHistory();
+            } else {
+                document.getElementById('welcome-content').style.display = 'block';
+                document.getElementById('analysis-content').style.display = 'none';
+                document.getElementById('resultArea').style.display = 'none';
+            }
+        });
+
+        function toggleAuth() {
+            if (!currentUser) {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
+                auth.signInWithPopup(provider)
+                    .then((result) => { currentUser = result.user; })
+                    .catch((error) => {
+                        console.error("خطأ البوب أب: ", error);
+                        auth.signInWithRedirect(provider);
+                    });
+            } else {
+                auth.signOut().then(() => location.reload());
+            }
+        }
+
+        function handleImage(e) {
+            const reader = new FileReader();
+            reader.onload = (f) => {
+                const img = document.getElementById('previewImg');
+                img.src = f.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        // ============ نظام الذكاء التحليلي المتعدد ============
+        function getImageAnalysis(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    const ratio = img.width / img.height;
+                    let accountType, accountDesc;
+                    if (ratio > 1.7) {
+                        accountType = "صانع محتوى Reels / فيديوهات قصيرة 🎬";
+                        accountDesc = "حسابك مثالي لمحتوى الفيديو العمودي القصير (Reels/TikTok). ركز على الإيقاع السريع والمؤثرات البصرية.";
+                    } else if (ratio < 0.7) {
+                        accountType = "صانع محتوى ستوري / بورتريه 📱";
+                        accountDesc = "حسابك يميل للمحتوى العمودي الطويل (Story). مثالي للمحتوى التفاعلي اليومي والقصص المتسلسلة.";
+                    } else {
+                        accountType = "صانع محتوى بوستات / كاروسيل 🖼️";
+                        accountDesc = "حسابك متوازن ومناسب للبوستات والكاروسيل التعليمي أو الترفيهي. ركز على التصميم الجذاب.";
+                    }
+                    URL.revokeObjectURL(url);
+                    resolve({ accountType, accountDesc, ratio, width: img.width, height: img.height });
+                };
+                img.src = url;
+            });
+        }
+
+        // ============ حالة الحساب ============
+        function calculateHealthScore(bioText, followersCount) {
+            let score = 50; // أساسي
+            const details = [];
+            if (bioText && bioText.length > 20) { score += 20;
+                details.push("بايو احترافي (+20)"); } else { details.push("بايو قصير يحتاج تحسين"); }
+            if (followersCount && followersCount > 100) { score += 15;
+                details.push("قاعدة متابعين جيدة (+15)"); } else { details.push("قاعدة متابعين صغيرة"); }
+            // محاكاة: الصورة موجودة دائماً
+            score += 10;
+            details.push("صورة بروفايل موجودة (+10)");
+            score = Math.min(score, 100);
+            score = Math.max(score, 10);
+            return { score, details };
+        }
+
+        // ============ رسم عداد الحالة ============
+        function drawHealthGauge(score) {
+            const canvas = document.getElementById('healthGauge');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            // خلفية
+            ctx.beginPath();
+            ctx.arc(70, 70, 55, 0.75 * Math.PI, 2.25 * Math.PI);
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.stroke();
+
+            // القوس الملون
+            const angleStart = 0.75 * Math.PI;
+            const angleEnd = angleStart + (score / 100) * (1.5 * Math.PI);
+            const gradient = ctx.createLinearGradient(0, 0, w, h);
+            if (score < 40) gradient.addColorStop(0, '#ff4444');
+            else if (score < 70) gradient.addColorStop(0, '#ff9a00');
+            else gradient.addColorStop(0, '#00f2fe');
+            gradient.addColorStop(1, '#4facfe');
+
+            ctx.beginPath();
+            ctx.arc(70, 70, 55, angleStart, angleEnd);
+            ctx.lineWidth = 14;
+            ctx.strokeStyle = gradient;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            document.getElementById('healthPercent').innerText = score + '%';
+            let label = score >= 80 ? 'ممتاز! حسابك في أفضل حالة 🌟' :
+                score >= 50 ? 'جيد، هناك مجال للتحسين 👍' :
+                'يحتاج تحسينات عاجلة ⚠️';
+            document.getElementById('healthLabel').innerText = label;
+        }
+
+        // ============ رسم توقعات النمو ============
+        let growthChartInstance = null;
+
+        function drawGrowthChart(currentFollowers) {
+            const canvas = document.getElementById('growthChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (growthChartInstance) growthChartInstance.destroy();
+
+            const followers = currentFollowers || 100;
+            const days = Array.from({ length: 30 }, (_, i) => `يوم ${i + 1}`);
+            const data = [];
+            let val = followers;
+            for (let i = 0; i < 30; i++) {
+                val = Math.round(val * (1 + (Math.random() * 0.04 + 0.01)));
+                data.push(val);
+            }
+
+            growthChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [{
+                        label: 'توقعات المتابعين',
+                        data: data,
+                        borderColor: '#00f2fe',
+                        backgroundColor: 'rgba(0,242,254,0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 2,
+                        pointHoverRadius: 6,
+                        borderWidth: 2.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                            ticks: { color: '#7e84a3', font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#7e84a3', font: { size: 9 }, maxTicksLimit: 6 }
+                        }
+                    }
+                }
+            });
+
+            const predicted = data[data.length - 1];
+            document.getElementById('growthSummary').innerText =
+                `📊 المتوقع وصولك إلى ${predicted.toLocaleString()} متابع خلال 30 يوم (نمو ~${Math.round((predicted/followers -1)*100)}%)`;
+            document.getElementById('growthCard').style.display = 'block';
+        }
+
+        // ============ قائمة المهام ============
+        function renderTaskList() {
+            const tasks = [
+                { id: 't1', text: 'نشر ستوري تفاعلي اليوم', cat: 'محتوى' },
+                { id: 't2', text: 'الرد على التعليقات الجديدة', cat: 'تفاعل' },
+                { id: 't3', text: 'تصفح الهاشتاقات الرائجة', cat: 'بحث' },
+                { id: 't4', text: 'نشر بوست/ريل حسب الخطة', cat: 'محتوى' },
+                { id: 't5', text: 'متابعة تحليلات آخر منشور', cat: 'تحليل' }
+            ];
+            const container = document.getElementById('taskList');
+            container.innerHTML = '';
+            tasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.innerHTML = `
+                    <div class="task-checkbox"><i class="fa-solid fa-check"></i></div>
+                    <span class="task-text">${task.text}</span>
+                    <span class="task-badge">${task.cat}</span>
+                `;
+                li.onclick = () => toggleTask(li, task.id);
+                container.appendChild(li);
+            });
+            document.getElementById('totalTasks').innerText = tasks.length;
+            updateTaskCounter();
+        }
+
+        function toggleTask(el, taskId) {
+            el.classList.toggle('done');
+            updateTaskCounter();
+            // حفظ في Firebase
+            if (currentUser && el.classList.contains('done')) {
+                db.collection("user_tasks").add({
+                    uid: currentUser.uid,
+                    taskId: taskId,
+                    text: el.querySelector('.task-text').innerText,
+                    date: new Date().toLocaleDateString('ar-EG'),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(() => {});
+            }
+        }
+
+        function updateTaskCounter() {
+            const total = document.querySelectorAll('#taskList .task-item').length;
+            const done = document.querySelectorAll('#taskList .task-item.done').length;
+            document.getElementById('completedTasks').innerText = done;
+            document.getElementById('totalTasks').innerText = total;
+        }
+
+        // ============ الهاشتاقات الرائجة ============
+        function fetchTrendingHashtags() {
+            // محاكاة API للهاشتاقات الرائجة
+            const trendingPools = [
+                ['#دوري_روشن', '#الهلال', '#النصر', '#الاتحاد', '#الأهلي'],
+                ['#كلاسيكو_الارض', '#برشلونة', '#ريال_مدريد', '#دوري_الابطال', '#مانشستر_سيتي'],
+                ['#ترند_السعودية', '#فيديو_مضحك', '#تحدي_اليوم', '#صباح_الخير', '#مساء_الجمال'],
+                ['#كرة_القدم', '#اهداف_اليوم', '#ملخص_المباراة', '#توقع_واكسب', '#رياضة_السعودية']
+            ];
+            const pool = trendingPools[Math.floor(Math.random() * trendingPools.length)];
+            const container = document.getElementById('trendingHashtags');
+            container.innerHTML = '';
+            pool.forEach(tag => {
+                const div = document.createElement('div');
+                div.className = 'hashtag-item trending';
+                div.innerHTML = `<span class="trend-badge">TREND</span>${tag}`;
+                container.appendChild(div);
+            });
+        }
+
+        // ============ التحليل الرئيسي ============
+        async function startAnalysis() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
+
+            const followersInput = document.getElementById('followersInput');
+            const followersCount = parseInt(followersInput.value) || 0;
+
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('resultArea').style.display = 'none';
+
+            // تحليل الصورة
+            const imageAnalysis = await getImageAnalysis(fileInput.files[0]);
+
+            setTimeout(() => {
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('resultArea').style.display = 'block';
+
+                // --- الذكاء التحليلي المتعدد ---
+                document.getElementById('accountType').innerText = imageAnalysis.accountType;
+                document.getElementById('accountTypeDesc').innerText =
+                    imageAnalysis.accountDesc +
+                    ` (نسبة العرض/الارتفاع: ${imageAnalysis.ratio.toFixed(2)} | ${imageAnalysis.width}x${imageAnalysis.height}px)`;
+
+                // --- الهوية ---
+                const namePool = [
+                    "عالم المستديرة | كرة قدم",
+                    "ملاعب العرب | تحليل ونجوم",
+                    "إثارة المدرجات | ترفيه رياضي",
+                    "هداف توك | أهداف + مهارات",
+                    "صدى الرياضة | كرة وترفيه"
+                ];
+                const bioPool = [
+                    "⚽️ كل ما يخص كرة القدم العالمية والعربية\n🎯 تحليلات، أهداف، لقطات حصرية\n🎬 فيديوهات ترفيهية يومية، تابعنا لايفوتك شيء",
+                    "🏟️ خلف الكواليس وأسرار الملاعب\n🔥 ننقل لك الإثارة والمنوعات الرياضية\n📩 للتواصل والإعلانات: رابط التواصل",
+                    "🥅 شغف كرة القدم بشكل جديد\n🎞️ محتوى ترفيهي رياضي يومي\n💬 تفاعل وشاركنا توقعاتك",
+                    "🌟 أبرز لحظات كرة القدم العالمية\n🎥 فيديوهات قصيرة ممتعة\n📊 إحصائيات وطرائف كروية",
+                    "🏆 دوري أبطال أوروبا، الدوري السعودي\n🎤 تعليقات صوتية مميزة\n📌 تابع البثوث المباشرة"
+                ];
+                const avatarPool = [
+                    "صورة كرة قدم احترافية بتأثيرات ضوئية زرقاء وخلفية ملعب تحت الأضواء الكاشفة.",
+                    "شعار قناة رياضي يجمع بين كرة قدم وأيقونة بث مع لمسة نيون عصرية.",
+                    "صورة لاعب مشهور (مع مراعاة الحقوق) مع تعديل فني وإطار ذهبي.",
+                    "تصميم جرافيكي لكرة قدم متوهجة باللونين الأزرق والأبيض على خلفية داكنة.",
+                    "أفاتار كرتوني لشخصية مشجعة ترتدي قميص نادي شهير بأسلوب 3D مرح."
+                ];
+                const seed = Math.floor(Math.random() * namePool.length) % namePool.length;
+                const suggestedName = namePool[seed];
+                const suggestedBio = bioPool[seed];
+                const suggestedAvatar = avatarPool[seed];
+
+                document.getElementById('suggestedName').innerText = suggestedName;
+                document.getElementById('suggestedBio').innerText = suggestedBio;
+                document.getElementById('suggestedAvatar').innerText = suggestedAvatar;
+
+                // --- حالة الحساب ---
+                const health = calculateHealthScore(suggestedBio, followersCount);
+                drawHealthGauge(health.score);
+
+                // --- توقعات النمو ---
+                if (followersCount > 0) {
+                    drawGrowthChart(followersCount);
+                } else {
+                    document.getElementById('growthCard').style.display = 'none';
+                }
+
+                // --- خطة المحتوى ---
+                const rows = [
+                    { d: "السبت", c: "فيديو قصير (أجمل 5 أهداف في مباريات الأمس) + تعليق صوتي", t: "04:30 م" },
+                    { d: "الاثنين", c: "منشور كاروسيل (توقع نتيجة الكلاسيكو القادم + استفتاء)",
+                    t: "09:00 م" },
+                    { d: "الأربعاء", c: "مقطع ترفيهي (لحظات مضحكة من الملاعب أو تقليد لاعب)", t: "08:00 م" },
+                    { d: "الخميس", c: "بث مباشر قصير (تحليل سريع لمباراة اليوم ومناقشة مع المتابعين)",
+                    t: "10:30 م" }
+                ];
+                let tableHtml = "";
+                rows.forEach(r => tableHtml +=
+                    `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
+                document.getElementById('resultTable').innerHTML = tableHtml;
+
+                // --- الهاشتاقات ---
+                const tags = [
+                    "#كرة_القدم", "#أهداف_عالمية", "#دوري_المحترفين", "#رياضة_ترفيه",
+                    "#ملاعب", "#توقعات_المباريات", "#محتوى_رياضي", "#كورة_توك",
+                    "#Football", "#SoccerSkills", "#GoalReels"
+                ];
+                let tagsHtml = "";
+                tags.forEach(t => tagsHtml += `<div class="hashtag-item">${t}</div>`);
+                document.getElementById('dynamicHashtags').innerHTML = tagsHtml;
+
+                // --- الهاشتاقات الرائجة ---
+                fetchTrendingHashtags();
+
+                // --- قائمة المهام ---
+                renderTaskList();
+
+                // --- تخزين للـ PDF ---
+                analysisData = {
+                    suggestedName,
+                    suggestedBio,
+                    suggestedAvatar,
+                    accountType: imageAnalysis.accountType,
+                    healthScore: health.score,
+                    followersCount,
+                    rows,
+                    tags,
+                    date: new Date().toLocaleDateString('ar-EG')
+                };
+
+                // تمرير للنتائج
+                document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+
+            }, 2200);
+        }
+
+        // ============ تصدير PDF ============
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+            // دعم العربية (خط مبسط)
+            doc.setR2L(true);
+
+            // عنوان
+            doc.setFontSize(22);
+            doc.setTextColor(0, 242, 254);
+            doc.text('تقرير التحليل الذكي - SocialAnalyzer AI', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(126, 132, 163);
+            doc.text(`تاريخ التقرير: ${analysisData.date || new Date().toLocaleDateString('ar-EG')}`, 105, 30, { align: 'center' });
+
+            let y = 45;
+            doc.setFontSize(14);
+            doc.setTextColor(255, 255, 255);
+
+            // نوع الحساب
+            doc.setFontSize(13);
+            doc.setTextColor(0, 242, 254);
+            doc.text('نوع الحساب:', 20, y);
+            doc.setFontSize(11);
+            doc.setTextColor(200, 200, 200);
+            doc.text(analysisData.accountType || '-', 20, y + 7);
+            y += 18;
+
+            // اسم مقترح
+            doc.setFontSize(13);
+            doc.setTextColor(0, 242, 254);
+            doc.text('الاسم المقترح:', 20, y);
+            doc.setFontSize(11);
+            doc.setTextColor(200, 200, 200);
+            doc.text(analysisData.suggestedName || '-', 20, y + 7);
+            y += 18;
+
+            // بايو
+            doc.setFontSize(13);
+            doc.setTextColor(0, 242, 254);
+            doc.text('البايو:', 20, y);
+            doc.setFontSize(10);
+            doc.setTextColor(200, 200, 200);
+            const bioLines = (analysisData.suggestedBio || '').split('\n');
+            bioLines.forEach(line => {
+                doc.text(line, 20, y + 7);
+                y += 6;
+            });
+            y += 10;
+
+            // صحة الحساب
+            doc.setFontSize(13);
+            doc.setTextColor(0, 242, 254);
+            doc.text('درجة صحة الحساب:', 20, y);
+            doc.setFontSize(11);
+            doc.setTextColor(200, 200, 200);
+            doc.text(`${analysisData.healthScore || 0}%`, 20, y + 7);
+            y += 18;
+
+            // توقعات النمو
+            if (analysisData.followersCount) {
+                doc.setFontSize(13);
+                doc.setTextColor(0, 242, 254);
+                doc.text('توقعات النمو:', 20, y);
+                doc.setFontSize(11);
+                doc.setTextColor(200, 200, 200);
+                doc.text(`من ${analysisData.followersCount} متابع إلى ${Math.round(analysisData.followersCount * 1.35)} خلال 30 يوم`,
+                    20, y + 7);
+                y += 18;
+            }
+
+            // خطة النشر
+            doc.setFontSize(13);
+            doc.setTextColor(0, 242, 254);
+            doc.text('خطة النشر:', 20, y);
+            y += 10;
+            if (analysisData.rows) {
+                analysisData.rows.forEach(r => {
+                    doc.setFontSize(10);
+                    doc.setTextColor(200, 200, 200);
+                    doc.text(`${r.d}: ${r.c} (${r.t})`, 25, y);
+                    y += 7;
                 });
             }
-            document.getElementById('historyList').innerHTML = html;
-        });
-    }
-</script>
+            y += 10;
+
+            // هاشتاقات
+            doc.setFontSize(13);
+            doc.setTextColor(0, 242, 254);
+            doc.text('الهاشتاقات المقترحة:', 20, y);
+            y += 8;
+            if (analysisData.tags) {
+                doc.setFontSize(9);
+                doc.setTextColor(200, 200, 200);
+                doc.text(analysisData.tags.join('  '), 20, y, { maxWidth: 170 });
+            }
+
+            // تذييل
+            doc.setFontSize(8);
+            doc.setTextColor(100, 100, 100);
+            doc.text('تم إنشاؤه بواسطة SocialAnalyzer AI | youtube.com/@t37s | t.me/jz8x2', 105, 280, { align: 'center' });
+
+            doc.save(`تقرير_تحليل_${analysisData.suggestedName || 'الحساب'}.pdf`);
+        }
+
+        // ============ الحفظ السحابي ============
+        function saveToCloud() {
+            if (!currentUser) return alert("يرجى تسجيل الدخول بحساب جوجل أولاً لحفظ خطتك!");
+            db.collection("user_analytics").add({
+                uid: currentUser.uid,
+                date: new Date().toLocaleDateString('ar-EG'),
+                type: "تحليل شامل (كرة قدم/ترفيه) - متعدد الأبعاد",
+                status: "نشط ومتزامن",
+                healthScore: analysisData.healthScore || 0,
+                accountType: analysisData.accountType || ''
+            }).then(() => alert("تم حفظ الخطة والتقرير السحابي بنجاح!"));
+        }
+
+        function loadHistory() {
+            if (!currentUser) {
+                document.getElementById('historyList').innerHTML = "قم بتسجيل الدخول لحفظ واستعراض أرشيفك السحابي.";
+                return;
+            }
+            document.getElementById('historyList').innerHTML = "جاري جلب بياناتك السحابية الموثقة...";
+            db.collection("user_analytics").where("uid", "==", currentUser.uid).get().then(snap => {
+                let html = "";
+                if (snap.empty) {
+                    html = "لا يوجد أي خطط محفوظة في حسابك حتى الآن.";
+                } else {
+                    snap.forEach(doc => {
+                        const data = doc.data();
+                        html += `
+                        <div class="archive-item">
+                            <div class="archive-meta">
+                                <h4>${data.type}</h4>
+                                <span><i class="far fa-calendar-alt"></i> ${data.date} | صحة: ${data.healthScore || 'N/A'}%</span>
+                            </div>
+                            <div class="status-badge">${data.status}</div>
+                        </div>`;
+                    });
+                }
+                document.getElementById('historyList').innerHTML = html;
+            });
+        }
+    </script>
 </body>
-</html>
+        </html>
