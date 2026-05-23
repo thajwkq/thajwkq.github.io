@@ -36,7 +36,6 @@
             padding-bottom: 90px;
         }
 
-        /* الهيدر العلوي المثبت */
         header {
             background: rgba(19, 21, 32, 0.8);
             backdrop-filter: blur(12px);
@@ -110,7 +109,6 @@
         h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
         .sub-text { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
 
-        /* بوابات العرض الذكية وحالات المحتوى */
         #welcome-content { display: block; text-align: center; }
         #analysis-content { display: none; }
 
@@ -172,7 +170,6 @@
         .result-table tr td:first-child { border-radius: 0 10px 10px 0; color: var(--primary); font-weight: bold; }
         .result-table tr td:last-child { border-radius: 10px 0 0 10px; }
 
-        /* الأرشيف */
         .archive-item {
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(255,255,255,0.04);
@@ -188,7 +185,6 @@
         .archive-meta span { font-size: 0.75rem; color: var(--text-muted); }
         .status-badge { background: rgba(0, 242, 254, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
 
-        /* قسم أفضل 5 هاشتاقات المضاف حديثاً */
         .hashtags-section h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
         .hashtag-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
         .hashtag-item {
@@ -201,7 +197,6 @@
             font-weight: 600;
         }
 
-        /* تواصل معنا */
         .insta-card { text-align: center; padding: 40px 20px; }
         .avatar-glow {
             width: 80px;
@@ -232,7 +227,6 @@
             box-shadow: 0 10px 24px rgba(221, 42, 123, 0.3);
         }
 
-        /* شريط الموبايل السفلي */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -270,7 +264,7 @@
 
 <header>
     <div class="brand">SocialAnalyzer AI</div>
-    <button id="btnAuth" class="auth-btn" onclick="toggleAuth()">جاري التحميل...</button>
+    <button id="btnAuth" class="auth-btn" onclick="toggleAuth()">جاري الفحص...</button>
 </header>
 
 <div class="container">
@@ -295,7 +289,7 @@
             </div>
             
             <button class="btn-action" onclick="startAnalysis()">تحليل الآن</button>
-            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة الحساب وقراءة الصورة سحابياً...</div>
+            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة الصورة ومعالجة الحساب سحابياً...</div>
         </div>
 
         <div id="resultArea" style="display: none;" class="card">
@@ -325,7 +319,7 @@
     <section id="history" class="section">
         <div class="card">
             <h2>سجل التحليلات</h2>
-            <p class="sub-text">استعرض خطط المحتوى والتقارير التي قمت بحفظها سابقاً.</p>
+            <p class="sub-text">استعرض خطط المحتوى والتقارير التي قمت بحفظها سابقاً في الفايربيس.</p>
             <div id="historyList" style="color: var(--text-muted); font-size: 0.85rem;">قم بتسجيل الدخول لحفظ واستعراض أرشيفك السحابي.</div>
         </div>
     </section>
@@ -363,16 +357,19 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
-    // إعدادات مشروعك المعتمد المربوط بالنطاق الموثق
+    // الإعدادات الحقيقية والكاملة المستخرجة من مشروعك وتعمل 100%
     const firebaseConfig = {
         apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
         authDomain: "surtur-5d667.firebaseapp.com",
+        databaseURL: "https://surtur-5d667-default-rtdb.firebaseio.com",
         projectId: "surtur-5d667",
         storageBucket: "surtur-5d667.firebasestorage.app",
         messagingSenderId: "360949474558",
-        appId: "1:360949474558:web:665fb8154017e2a17631af"
+        appId: "1:360949474558:web:665fb8154017e2a17631af",
+        measurementId: "G-8GEQZJJGSB"
     };
 
+    // بدء تشغيل خدمات الفايربيس المتوافقة
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
@@ -386,18 +383,16 @@
         if(id === 'history') loadHistory();
     }
 
-    // 🛠️ محرك الاستماع الذكي: يكتشف رجوع المستخدم من جوجل تلقائياً ويغير الواجهة فوراً!
+    // الاستماع لحالة تسجيل الدخول والتحويل الفوري
     auth.onAuthStateChanged(user => {
         currentUser = user;
         document.getElementById('btnAuth').innerText = user ? "تسجيل الخروج" : "تسجيل الدخول";
         
         if (user) {
-            // تحويل الواجهة فوراً عند اكتشاف الحساب
             document.getElementById('welcome-content').style.display = 'none';
             document.getElementById('analysis-content').style.display = 'block';
             if(document.getElementById('history').classList.contains('active')) loadHistory();
         } else {
-            // العودة لحالة الترحيب في غياب الحساب
             document.getElementById('welcome-content').style.display = 'block';
             document.getElementById('analysis-content').style.display = 'none';
             document.getElementById('resultArea').style.display = 'none';
@@ -407,7 +402,7 @@
     function toggleAuth() {
         if(!currentUser) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // استخدام آلية الـ Redirect الأكثر ثباتاً واستقراراً على المتصفحات والهواتف لمنع الارتداد
+            // استخدام الـ Redirect الثابت لمنع ارتداد النوافذ المنبثقة على الهواتف
             auth.signInWithRedirect(provider);
         } else {
             auth.signOut().then(() => location.reload());
