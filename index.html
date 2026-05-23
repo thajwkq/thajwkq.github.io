@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محلل حسابات تيك توك وإنستغرام الذكي</title>
+    <style>
+        :root {
+            --primary: #8a3ab9;
+            --secondary: #fe2c55;
+            --dark: #121212;
+            --light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f0f12;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .upload-section {
+            background: #1e1e24;
+            border: 2px dashed #444;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .upload-section:hover {
+            border-color: var(--secondary);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        #preview {
+            max-width: 200px;
+            margin: 20px auto;
+            display: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .loading {
+            display: none;
+            margin: 20px 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* قسم النتائج */
+        .results-section {
+            display: none;
+            margin-top: 40px;
+            background: #1e1e24;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .result-card {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .result-card h3 {
+            color: #fe2c55;
+            margin-top: 0;
+        }
+
+        .hashtag {
+            display: inline-block;
+            background: rgba(138, 58, 185, 0.2);
+            color: #d660ff;
+            padding: 5px 12px;
+            border-radius: 15px;
+            margin: 5px;
+            font-weight: bold;
+            border: 1px solid var(--primary);
+        }
+
+        /* الجدول الأسبوعي */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #121212;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid #292933;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #1a1a22;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>محلل الحسابات الذكي 🚀</h1>
+        <p>ارفع صورة لملفك الشخصي (تيك توك أو إنستغرام) واحصل على خطة نمو متكاملة</p>
+    </header>
+
+    <!-- منطقة رفع الصورة -->
+    <div class="upload-section" onclick="document.getElementById('fileInput').click()">
+        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <p>اضغط هنا لرفع صورة الحساب الشخصي (Screenshot)</p>
+        <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
+        <img id="preview" alt="معاينة الصورة">
+    </div>
+
+    <div style="text-align: center;">
+        <button class="btn" onclick="analyzeAccount()">ابدأ التحليل الذكي</button>
+        <div class="loading" id="loadingText">جاري فحص الصورة وتحليل البيانات بالذكاء الاصطناعي...</div>
+    </div>
+
+    <!-- قسم عرض النتائج -->
+    <div class="results-section" id="results">
+        <div class="result-card">
+            <h3>💡 المحتوى المناسب لحسابك</h3>
+            <p id="contentType">بناءً على الصورة المرفوعة، حسابك يمتلك طابعاً (تقنياً/تعليمياً). يفضل التركيز على الفيديوهات القصيرة (Reels/TikTok) التي تشرح حلولاً للمشاكل اليومية في 30 ثانية باستخدام صوتك الشخصي لزيادة الموثوقية.</p>
+        </div>
+
+        <div class="result-card">
+            <h3>#️⃣ أفضل 5 هاشتاقات لنوع حسابك</h3>
+            <div id="hashtagsContainer">
+                <span class="hashtag">#صناع_المحتوى</span>
+                <span class="hashtag">#تطوير_الذات</span>
+                <span class="hashtag">#نصائح_رقمية</span>
+                <span class="hashtag">#إنستغرام_تيكتوك</span>
+                <span class="hashtag">#تعلم_على_التيك_توك</span>
+            </div>
+        </div>
+
+        <div class="result-card">
+            <h3>⏰ أفضل أوقات النشر اليومية</h3>
+            <p id="bestTimes">أوقات ذروة التفاعل لجمهورك هي: <b>4:00 مساءً</b> و <b>8:30 مساءً</b> (حسب التوقيت المحلي).</p>
+        </div>
+
+        <div class="result-card">
+            <h3>📅 جدول النشر الأسبوعي المقترح</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>اليوم</th>
+                        <th>نوع المنشور</th>
+                        <th>وقت النشر</th>
+                        <th>الهدف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>السبت</td>
+                        <td>فيديو قصير (Reels)</td>
+                        <td>05:00 م</td>
+                        <td>جذب متابعين جدد</td>
+                    </tr>
+                    <tr>
+                        <td>الإثنين</td>
+                        <td>سلسلة نصائح (Carousel)</td>
+                        <td>07:00 م</td>
+                        <td>زيادة الحفظ (Save)</td>
+                    </tr>
+                    <tr>
+                        <td>الأربعاء</td>
+                        <td>فيديو تفاعلي/سؤال</td>
+                        <td>08:00 م</td>
+                        <td>زيادة التعليقات</td>
+                    </tr>
+                    <tr>
+                        <td>الجمعة</td>
+                        <td>فيديو ترفيهي/خلف الكواليس</td>
+                        <td>04:00 م</td>
+                        <td>بناء علاقة مع الجمهور</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // وظيفة معاينة الصورة بعد رفعها
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const output = document.getElementById('preview');
+            output.src = reader.result;
+            output.style.display = 'block';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    // محاكاة عملية التحليل
+    function analyzeAccount() {
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput.files.length === 0) {
+            alert('الرجاء رفع صورة الحساب أولاً!');
+            return;
+        }
+
+        document.getElementById('loadingText').style.display = 'block';
+        document.getElementById('results').style.display = 'none';
+
+        // محاكاة انتهاء التحليل بعد 3 ثوانٍ
+        setTimeout(() => {
+            document.getElementById('loadingText').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            
+            // سحب الشاشة تلقائياً للأسفل لرؤية النتائج
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
