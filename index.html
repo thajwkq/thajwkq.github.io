@@ -354,6 +354,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
+    // إعدادات الفايربيس الحقيقية والخاصة بمشروعك
     const firebaseConfig = {
         apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
         authDomain: "surtur-5d667.firebaseapp.com",
@@ -393,10 +394,16 @@
         }
     });
 
+    // دالة تسجيل الدخول المحدثة بنظام Popup لإجبار متصفحات الموبايل على الاستجابة
     function toggleAuth() {
         if(!currentUser) {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithRedirect(provider);
+            auth.signInWithPopup(provider).then((result) => {
+                currentUser = result.user;
+            }).catch((error) => {
+                console.error("خطأ تسجيل الدخول: ", error);
+                alert("فشل الاتصال بجوجل: " + error.message);
+            });
         } else {
             auth.signOut().then(() => location.reload());
         }
@@ -412,7 +419,6 @@
         reader.readAsDataURL(e.target.files[0]);
     }
 
-    // دالة التحليل الذكي: تقوم بتوليد الخطة والهاشتاقات المتوافقة ديناميكياً بناءً على البيانات
     function startAnalysis() {
         if(!document.getElementById('fileInput').files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
         document.getElementById('loader').style.display = 'block';
@@ -422,7 +428,6 @@
             document.getElementById('loader').style.display = 'none';
             document.getElementById('resultArea').style.display = 'block';
             
-            // 1. توليد الخطة الأسبوعية
             const rows = [
                 {d: "السبت", c: "فيديو قصير (ثقافة وحقائق مجالك الإلكتروني)", t: "06:00 م"},
                 {d: "الاثنين", c: "منشور كاروسيل (شرح تفصيلي لحل مشكلة قوية)", t: "08:30 م"},
@@ -432,7 +437,6 @@
             rows.forEach(r => tableHtml += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
             document.getElementById('resultTable').innerHTML = tableHtml;
 
-            // 2. توليد الهاشتاقات الديناميكية المناسبة لتحليل الحساب
             const tags = ["#صناع_المحتوى", "#تطوير_الحسابات", "#تحليل_البيانات", "#السوشيال_ميديا", "#SocialAnalyzer_AI"];
             let tagsHtml = "";
             tags.forEach(t => tagsHtml += `<div class="hashtag-item">${t}</div>`);
@@ -460,7 +464,7 @@
         db.collection("user_analytics").where("uid", "==", currentUser.uid).get().then(snap => {
             let html = "";
             if(snap.empty) {
-                html = "لا يوجد أي خطط محفوظة في حسابك حتى الآن.";
+                html = "لا يوجد أي خطط محفوظة in حسابك حتى الآن.";
             } else {
                 snap.forEach(doc => {
                     const data = doc.data();
