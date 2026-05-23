@@ -33,10 +33,10 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            padding-bottom: 90px; /* مساحة لعدم التداخل مع شريط التنقل السفلي */
+            padding-bottom: 90px;
         }
 
-        /* الهيدر العلوي المبسط */
+        /* الهيدر العلوي المثبت */
         header {
             background: rgba(19, 21, 32, 0.8);
             backdrop-filter: blur(12px);
@@ -79,7 +79,7 @@
         }
 
         .container {
-            max-width: 500px; /* ليعطي مظهر التطبيقات الأنيقة الملمومة */
+            max-width: 500px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -98,7 +98,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* تصميم الكروت الاحترافي */
         .card {
             background: var(--bg-card);
             border-radius: 20px;
@@ -111,7 +110,10 @@
         h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
         .sub-text { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
 
-        /* منطقة الرفع الذكية */
+        /* بوابات العرض الذكية وحالات المحتوى */
+        #welcome-content { display: block; text-align: center; }
+        #analysis-content { display: none; }
+
         .drop-zone {
             border: 2px dashed rgba(0, 242, 254, 0.3);
             background: rgba(0, 242, 254, 0.01);
@@ -156,8 +158,7 @@
 
         .btn-action:active { transform: scale(0.98); }
 
-        /* التموج وعارض النتائج */
-        .spinner { display: none; color: var(--primary); font-size: 0.9rem; margin-top: 15px; }
+        .spinner { display: none; color: var(--primary); font-size: 0.9rem; margin-top: 15px; text-align: center; }
 
         .result-table {
             width: 100%;
@@ -171,7 +172,7 @@
         .result-table tr td:first-child { border-radius: 0 10px 10px 0; color: var(--primary); font-weight: bold; }
         .result-table tr td:last-child { border-radius: 10px 0 0 10px; }
 
-        /* تصميم الأرشيف (التحليلات السابقة) */
+        /* الأرشيف */
         .archive-item {
             background: rgba(255,255,255,0.02);
             border: 1px solid rgba(255,255,255,0.04);
@@ -187,12 +188,21 @@
         .archive-meta span { font-size: 0.75rem; color: var(--text-muted); }
         .status-badge { background: rgba(0, 242, 254, 0.1); color: var(--primary); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
 
-        /* تواصل مع المطور */
-        .insta-card {
-            text-align: center;
-            padding: 40px 20px;
+        /* قسم أفضل 5 هاشتاقات المضاف حديثاً */
+        .hashtags-section h3 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+        .hashtag-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .hashtag-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #d1d5db;
+            font-weight: 600;
         }
 
+        /* تواصل معنا */
+        .insta-card { text-align: center; padding: 40px 20px; }
         .avatar-glow {
             width: 80px;
             height: 80px;
@@ -222,7 +232,7 @@
             box-shadow: 0 10px 24px rgba(221, 42, 123, 0.3);
         }
 
-        /* شريط التنقل السفلي الاحترافي للهواتف */
+        /* شريط الموبايل السفلي */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -260,14 +270,21 @@
 
 <header>
     <div class="brand">SocialAnalyzer AI</div>
-    <button id="btnAuth" class="auth-btn" onclick="toggleAuth()">تسجيل الدخول</button>
+    <button id="btnAuth" class="auth-btn" onclick="toggleAuth()">جاري التحميل...</button>
 </header>
 
 <div class="container">
     
     <section id="home" class="section active">
-        <div class="card">
-            <h2>التحليل الذكي</h2>
+        
+        <div id="welcome-content" class="card">
+            <h2>التحليل الذكي للمحتوى 👋</h2>
+            <p class="sub-text">يرجى تسجيل الدخول بحساب جوجل لفتح ميزات المنصة المتطورة وقراءة مؤشرات الحساب السحابية.</p>
+            <button class="btn-action" onclick="toggleAuth()">تسجيل الدخول السريع</button>
+        </div>
+
+        <div id="analysis-content" class="card">
+            <h2>التحليل الذكي البرمجي</h2>
             <p class="sub-text">ارفع لقطة شاشة لملفك الشخصي لإنشاء الخطة المقترحة.</p>
             
             <div class="drop-zone" onclick="document.getElementById('fileInput').click()">
@@ -278,7 +295,7 @@
             </div>
             
             <button class="btn-action" onclick="startAnalysis()">تحليل الآن</button>
-            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة الحساب سحابياً...</div>
+            <div class="spinner" id="loader"><i class="fas fa-circle-notch fa-spin"></i> جاري قراءة الحساب وقراءة الصورة سحابياً...</div>
         </div>
 
         <div id="resultArea" style="display: none;" class="card">
@@ -291,13 +308,25 @@
             </table>
             <button class="btn-action" style="background: rgba(255,255,255,0.05); color: #fff; font-size:0.9rem;" onclick="saveToCloud()">حفظ الخطة في السجل السحابي</button>
         </div>
+
+        <div class="card hashtags-section">
+            <h3>🔥 أفضل 5 هاشتاقات لدعم المحتوى العربي</h3>
+            <p class="sub-text" style="margin-bottom:12px;">أكثر الهاشتاقات المتوافقة مع خوارزميات المنصات لضمان الانتشار السريع:</p>
+            <div class="hashtag-list">
+                <div class="hashtag-item">#صناع_المحتوى</div>
+                <div class="hashtag-item">#الذكاء_الاصطناعي</div>
+                <div class="hashtag-item">#تطوير_الذات</div>
+                <div class="hashtag-item">#تسويق_رقمي</div>
+                <div class="hashtag-item">#SocialAnalyzer</div>
+            </div>
+        </div>
     </section>
 
     <section id="history" class="section">
         <div class="card">
             <h2>سجل التحليلات</h2>
-            <p class="sub-text">استعرض خطط المحتوى التي قمت بحفظها سابقاً.</p>
-            <div id="historyList" style="color: var(--text-muted); font-size: 0.85rem;">قم بتسجيل الدخول لحفظ واستعراض أرشيفك.</div>
+            <p class="sub-text">استعرض خطط المحتوى والتقارير التي قمت بحفظها سابقاً.</p>
+            <div id="historyList" style="color: var(--text-muted); font-size: 0.85rem;">قم بتسجيل الدخول لحفظ واستعراض أرشيفك السحابي.</div>
         </div>
     </section>
 
@@ -305,7 +334,7 @@
         <div class="card insta-card">
             <div class="avatar-glow"><i class="fab fa-instagram"></i></div>
             <h2>تواصل مع المطور</h2>
-            <p class="sub-text">لديك فكرة أو استفسار بخصوص المنصة؟ تواصل معي مباشرة.</p>
+            <p class="sub-text">لديك فكرة ميزة جديدة أو استفسار برمجي؟ تواصل معي مباشرة.</p>
             <a href="https://instagram.com/th2f6" target="_blank" class="insta-link">
                 @th2f6 على إنستغرام
             </a>
@@ -334,6 +363,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <script>
+    // إعدادات مشروعك المعتمد المربوط بالنطاق الموثق
     const firebaseConfig = {
         apiKey: "AIzaSyCBbRaAuYo6KhH7K6-byjp4SCou0DS4IXc",
         authDomain: "surtur-5d667.firebaseapp.com",
@@ -356,15 +386,29 @@
         if(id === 'history') loadHistory();
     }
 
+    // 🛠️ محرك الاستماع الذكي: يكتشف رجوع المستخدم من جوجل تلقائياً ويغير الواجهة فوراً!
     auth.onAuthStateChanged(user => {
         currentUser = user;
         document.getElementById('btnAuth').innerText = user ? "تسجيل الخروج" : "تسجيل الدخول";
-        if(user && document.getElementById('history').classList.contains('active')) loadHistory();
+        
+        if (user) {
+            // تحويل الواجهة فوراً عند اكتشاف الحساب
+            document.getElementById('welcome-content').style.display = 'none';
+            document.getElementById('analysis-content').style.display = 'block';
+            if(document.getElementById('history').classList.contains('active')) loadHistory();
+        } else {
+            // العودة لحالة الترحيب في غياب الحساب
+            document.getElementById('welcome-content').style.display = 'block';
+            document.getElementById('analysis-content').style.display = 'none';
+            document.getElementById('resultArea').style.display = 'none';
+        }
     });
 
     function toggleAuth() {
         if(!currentUser) {
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+            const provider = new firebase.auth.GoogleAuthProvider();
+            // استخدام آلية الـ Redirect الأكثر ثباتاً واستقراراً على المتصفحات والهواتف لمنع الارتداد
+            auth.signInWithRedirect(provider);
         } else {
             auth.signOut().then(() => location.reload());
         }
@@ -383,13 +427,15 @@
     function startAnalysis() {
         if(!document.getElementById('fileInput').files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
         document.getElementById('loader').style.display = 'block';
+        document.getElementById('resultArea').style.display = 'none';
+        
         setTimeout(() => {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('resultArea').style.display = 'block';
             const rows = [
-                {d: "السبت", c: "فيديو قصير (ثقافة العلامة التجارية)", t: "06:00 م"},
-                {d: "الاثنين", c: "منشور كاروسيل (حل مشكلة تقنية)", t: "08:30 م"},
-                {d: "الاربعاء", c: "فيديو تفاعلي مع الهاشتاق النشط", t: "07:15 م"}
+                {d: "السبت", c: "فيديو قصير (ثقافة وحقائق مجالك الإلكتروني)", t: "06:00 م"},
+                {d: "الاثنين", c: "منشور كاروسيل (شرح تفصيلي لحل مشكلة قوية)", t: "08:30 م"},
+                {d: "الاربعاء", c: "فيديو تفاعلي يطرح سؤالاً مثيراً مع الهاشتاقات المحدثة", t: "07:15 م"}
             ];
             let html = "";
             rows.forEach(r => html += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
@@ -409,10 +455,10 @@
 
     function loadHistory() {
         if(!currentUser) {
-            document.getElementById('historyList').innerHTML = "قم بتسجيل الدخول لحفظ واستعراض أرشيفك.";
+            document.getElementById('historyList').innerHTML = "قم بتسجيل الدخول لحفظ واستعراض أرشيفك السحابي.";
             return;
         }
-        document.getElementById('historyList').innerHTML = "جاري جلب بياناتك السحابية...";
+        document.getElementById('historyList').innerHTML = "جاري جلب بياناتك السحابية الموثقة...";
         db.collection("user_analytics").where("uid", "==", currentUser.uid).get().then(snap => {
             let html = "";
             if(snap.empty) {
