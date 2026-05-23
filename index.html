@@ -18,6 +18,7 @@
             --secondary: #4facfe;
             --accent-insta: linear-gradient(45deg, #f09433, #e1306c, #833ab4);
             --accent-telegram: linear-gradient(135deg, #229ED9, #31a9e1);
+            --accent-youtube: linear-gradient(135deg, #FF0000, #CC0000);
             --text-main: #ffffff;
             --text-muted: #7e84a3;
             --glow: rgba(0, 242, 254, 0.15);
@@ -171,7 +172,6 @@
         .result-table tr td:first-child { border-radius: 0 10px 10px 0; color: var(--primary); font-weight: bold; }
         .result-table tr td:last-child { border-radius: 10px 0 0 10px; }
 
-        /* ستايل الهوية المقترحة الجديدة */
         .identity-box {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -227,6 +227,8 @@
         }
         .link-insta { background: var(--accent-insta); box-shadow: 0 8px 20px rgba(221, 42, 123, 0.25); }
         .link-telegram { background: var(--accent-telegram); box-shadow: 0 8px 20px rgba(34, 158, 217, 0.25); }
+        .link-youtube { background: var(--accent-youtube); box-shadow: 0 8px 20px rgba(255, 0, 0, 0.25); }
+        .link-rush { background: linear-gradient(135deg, #ff9a00, #ff5e00); box-shadow: 0 8px 20px rgba(255, 94, 0, 0.3); }
         .contact-link:active { transform: scale(0.98); }
 
         .bottom-nav {
@@ -353,8 +355,14 @@
                 <a href="https://instagram.com/th2f6" target="_blank" class="contact-link link-insta">
                     <i class="fab fa-instagram"></i> @th2f6 على إنستغرام
                 </a>
-                <a href="https://t.me/I_17g" target="_blank" class="contact-link link-telegram">
+                <a href="https://youtube.com/@t37s" target="_blank" class="contact-link link-youtube">
+                    <i class="fab fa-youtube"></i> قناة اليوتيوب T37S
+                </a>
+                <a href="https://t.me/jz8x2" target="_blank" class="contact-link link-telegram">
                     <i class="fab fa-telegram-plane"></i> قناة التيلجرام الرسمية
+                </a>
+                <a href="https://t.me/I_17g" target="_blank" class="contact-link link-rush">
+                    <i class="fas fa-bolt"></i> قناة رشق الحسابات
                 </a>
             </div>
         </div>
@@ -450,7 +458,7 @@
         reader.readAsDataURL(e.target.files[0]);
     }
 
-    // خوارزمية الذكاء السريع: تحلل الصورة برمجياً لتقدم خطة ذكية غير عشوائية بناءً على اسم الملف وحجمه
+    // خوارزمية ذكية تقترح هوية ومحتوى متخصص في كرة القدم والترفيه
     function startAnalysis() {
         const fileInput = document.getElementById('fileInput');
         if(!fileInput.files[0]) return alert("يرجى اختيار لقطة شاشة للملف الشخصي أولاً!");
@@ -458,43 +466,57 @@
         document.getElementById('loader').style.display = 'block';
         document.getElementById('resultArea').style.display = 'none';
         
-        // محاكاة قراءة بيكسلات الصورة والبيانات الفوقية لبناء استجابة دقيقة
         setTimeout(() => {
             document.getElementById('loader').style.display = 'none';
             document.getElementById('resultArea').style.display = 'block';
             
-            // تخصيص استباقي وذكي للحسابات العريقة والتقنية
-            const namePool = ["صانع الرؤى الرقمية | AI", "أرشيف التقنية والنمو", "المستشار الرقمي المحترف", "إمبراطور السوشيال ميديا"];
+            // أسماء احترافية لحسابات كرة القدم والترفيه
+            const namePool = [
+                "عالم المستديرة | كرة قدم",
+                "ملاعب العرب | تحليل ونجوم",
+                "إثارة المدرجات | ترفيه رياضي",
+                "هداف توك | أهداف + مهارات",
+                "صدى الرياضة | كرة وترفيه"
+            ];
             const bioPool = [
-                "🚀 نساعدك على فك شفرات خوارزميات التيك توك والإنستغرام \n📈 استراتيجيات نمو حقيقية بدون تعقيد \n💎 مطور حلول رقمية وبوتات ذكية",
-                "🔥 دليل صناع المحتوى لزيادة المشاهدات والتفاعل \n💡 أسرار خفية في عالم الأتمتة والسيرفرات \n📩 للأعمال والخدمات: تواصل عبر الخاص",
-                "🎯 نبني هويتك البصرية والرقمية من الصفر \n🧠 أدوات الذكاء الاصطناعي وتطبيقات الجيل القادم \n👇 تابع الخطة الأسبوعية هنا وباشر بالنمو"
+                "⚽️ كل ما يخص كرة القدم العالمية والعربية\n🎯 تحليلات، أهداف، لقطات حصرية\n🎬 فيديوهات ترفيهية يومية، تابعنا لايفوتك شيء",
+                "🏟️ خلف الكواليس وأسرار الملاعب\n🔥 ننقل لك الإثارة والمنوعات الرياضية\n📩 للتواصل والإعلانات: رابط التواصل",
+                "🥅 شغف كرة القدم بشكل جديد\n🎞️ محتوى ترفيهي رياضي يومي\n💬 تفاعل وشاركنا توقعاتك",
+                "🌟 أبرز لحظات كرة القدم العالمية\n🎥 فيديوهات قصيرة ممتعة\n📊 إحصائيات وطرائف كروية",
+                "🏆 دوري أبطال أوروبا، الدوري السعودي\n🎤 تعليقات صوتية مميزة\n📌 تابع البثوث المباشرة"
             ];
             const avatarPool = [
-                "صورة كرتونية ثلاثية الأبعاد (3D Avatar) بخلفية نيون داكنة (أزرق وبنفسجي) تعكس الطابع التقني والمستقبلي.",
-                "صورة شخصية حقيقية عالية الدقة مضاف لها إضاءة حافة (Rim Light) بلون النيون مع إزالة الخلفية ووضع لون داكن موحد.",
-                "شعار (Logo) حرفي مبتكر يدمج الحرف الأول من اسمك مع أيقونة برمجية أو سهم نمو صاعد متوهج."
+                "صورة كرة قدم احترافية بتأثيرات ضوئية زرقاء وخلفية ملعب تحت الأضواء الكاشفة.",
+                "شعار قناة رياضي يجمع بين كرة قدم وأيقونة بث مع لمسة نيون عصرية.",
+                "صورة لاعب مشهور (مع مراعاة الحقوق) مع تعديل فني وإطار ذهبي.",
+                "تصميم جرافيكي لكرة قدم متوهجة باللونين الأزرق والأبيض على خلفية داكنة.",
+                "أفاتار كرتوني لشخصية مشجعة ترتدي قميص نادي شهير بأسلوب 3D مرح."
             ];
 
-            // سحب توصية عشوائية ذكية متناسقة بالكامل كحزمة هوياتية واحدة
-            const seed = Math.floor(Math.random() * namePool.length) % 3;
+            const seed = Math.floor(Math.random() * namePool.length) % namePool.length;
             
             document.getElementById('suggestedName').innerText = namePool[seed];
             document.getElementById('suggestedBio').innerText = bioPool[seed];
             document.getElementById('suggestedAvatar').innerText = avatarPool[seed];
 
-            // توليد خطة محتوى تناسب الهوية المستخرجة
+            // خطة محتوى كروية ترفيهية بمواعيد ذكية
             const rows = [
-                {d: "السبت", c: "فيديو قصير (شرح حركة خفية في خوارزميات مجالك تزيد التفاعل)", t: "06:15 م"},
-                {d: "الاثنين", c: "منشور كاروسيل (خطوات 1، 2، 3 لحل مشكلة تقنية يقع فيها الجميع)", t: "08:45 م"},
-                {d: "الأربعاء", c: "فيديو تفاعلي (اطرح نقاشاً مثيراً للجدل في مجالك واطلب رأي الجمهور بالتعليقات)", t: "07:30 م"}
+                {d: "السبت", c: "فيديو قصير (أجمل 5 أهداف في مباريات الأمس) + تعليق صوتي", t: "04:30 م"},
+                {d: "الاثنين", c: "منشور كاروسيل (توقع نتيجة الكلاسيكو القادم + استفتاء)", t: "09:00 م"},
+                {d: "الأربعاء", c: "مقطع ترفيهي (لحظات مضحكة من الملاعب أو تقليد لاعب)", t: "08:00 م"},
+                {d: "الخميس", c: "بث مباشر قصير (تحليل سريع لمباراة اليوم ومناقشة مع المتابعين)", t: "10:30 م"}
             ];
             
             let tableHtml = "";
             rows.forEach(r => tableHtml += `<tr><td>${r.d}</td><td>${r.c}</td><td>${r.t}</td></tr>`);
             document.getElementById('resultTable').innerHTML = tableHtml;
 
-            const tags = ["#صناع_المحتوى", "#تطوير_الحسابات", "#استراتيجيات_النمو", "#السوشيال_ميديا", "#أتمتة_المحتوى", "#SocialAnalyzer_AI"];
+            // هاشتاقات رياضية وترفيهية مستهدفة
+            const tags = [
+                "#كرة_القدم", "#أهداف_عالمية", "#دوري_المحترفين", "#رياضة_ترفيه",
+                "#ملاعب", "#توقعات_المباريات", "#محتوى_رياضي", "#كورة_توك",
+                "#Football", "#SoccerSkills", "#GoalReels"
+            ];
             let tagsHtml = "";
             tags.forEach(t => tagsHtml += `<div class="hashtag-item">${t}</div>`);
             document.getElementById('dynamicHashtags').innerHTML = tagsHtml;
@@ -507,7 +529,7 @@
         db.collection("user_analytics").add({
             uid: currentUser.uid,
             date: new Date().toLocaleDateString('ar-EG'),
-            type: "تحليل نمو الحساب الشامل",
+            type: "تحليل نمو الحساب (كرة قدم/ترفيه)",
             status: "نشط ومتزامن"
         }).then(() => alert("تم حفظ خطة التحليل السحابية متضمنة الهوية والبايو والجدول بنجاح!"));
     }
